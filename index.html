@@ -284,7 +284,7 @@ If you do not consent, do not use this app.
 (function(){if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobi|Mobi/i.test(navigator.userAgent))document.body.classList.add('mobile')})();
 
 // PWA Service Worker
-if('serviceWorker' in navigator){navigator.serviceWorker.register('data:text/javascript;base64,'+btoa('self.addEventListener("fetch",function(e){e.respondWith(fetch(e.request).catch(function(){return new Response("Offline")}))})')).catch(()=>{})}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 
 // ═══════ IndexedDB ═══════
 let DB=null;
