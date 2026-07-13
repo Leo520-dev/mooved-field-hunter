@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#6366f1">
+<link rel="manifest" href="data:application/json,{"name":"MOOVED Field Hunter","short_name":"MOOVED","start_url":".","display":"standalone","background_color":"#f0f4f8","theme_color":"#6366f1","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%236366f1'/%3E%3Ctext x='50' y='68' text-anchor='middle' font-size='40' fill='white'%3EM%3C/text%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"}]}">
+<title>MOOVED Field Sales — District Hunter</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f0f4f8;--card-bg:rgba(255,255,255,0.75);--card-border:rgba(255,255,255,0.5);--card-shadow:0 4px 24px rgba(0,0,0,0.06);--text:#1a2332;--text-secondary:#5b6b7e;--accent:#6366f1;--accent2:#8b5cf6;--accent3:#06b6d4;--gradient:linear-gradient(135deg,#6366f1,#8b5cf6,#06b6d4);--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--input-bg:#fff;--input-border:#d1d9e6;--badge-res:#6366f1;--badge-com:#f59e0b;--badge-sol:#10b981;--badge-hard:#ec4899;--badge-ind:#8b5cf6;--badge-mix:#6b7280;--radius:16px;--radius-sm:10px;--transition:0.3s cubic-bezier(0.4,0,0.2,1);--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+[data-theme="dark"]{--bg:#0f172a;--card-bg:rgba(30,41,59,0.8);--card-border:rgba(148,163,184,0.15);--card-shadow:0 4px 24px rgba(0,0,0,0.3);--text:#e2e8f0;--text-secondary:#94a3b8;--input-bg:#1e293b;--input-border:#334155}
+[data-theme="cyber"]{--bg:#0a0a1a;--card-bg:rgba(20,20,50,0.85);--card-border:rgba(0,255,255,0.2);--card-shadow:0 0 30px rgba(0,255,255,0.1);--text:#0ff;--text-secondary:#88f;--accent:#f0f;--accent2:#0ff;--accent3:#ff0;--gradient:linear-gradient(135deg,#f0f,#0ff,#ff0);--input-bg:#0d0d2b;--input-border:#33a}
+[data-theme="warm"]{--bg:#fef7f0;--card-bg:rgba(255,255,255,0.8);--card-border:rgba(255,200,150,0.3);--card-shadow:0 4px 24px rgba(200,100,50,0.08);--text:#2d1810;--text-secondary:#8b6b5a;--accent:#e86a2c;--accent2:#f59e0b;--accent3:#d97706;--gradient:linear-gradient(135deg,#e86a2c,#f59e0b,#d97706);--input-bg:#fff;--input-border:#f0d5c5}
+[data-theme="forest"]{--bg:#eef6ee;--card-bg:rgba(255,255,255,0.75);--card-border:rgba(120,180,120,0.25);--card-shadow:0 4px 24px rgba(0,0,0,0.08);--text:#1a2e1a;--text-secondary:#4a6b4a;--accent:#2d8a4e;--accent2:#4ade80;--accent3:#16a34a;--gradient:linear-gradient(135deg,#2d8a4e,#4ade80,#16a34a);--input-bg:#fff;--input-border:#c8e0c8}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;transition:background var(--transition),color var(--transition);overflow-x:hidden}
+.app{max-width:1200px;margin:0 auto;padding:16px 16px 40px}
+.sticky-header{position:sticky;top:0;z-index:100;background:var(--bg);padding:6px 16px 2px;margin:0 -16px;box-shadow:0 2px 12px rgba(0,0,0,.04);transition:background var(--transition)}
+body.mobile .sticky-header{padding:4px 12px 2px;margin:0 -12px}
+.hr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:3px}
+.hr h1{font-size:17px;font-weight:700;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2}
+body.mobile .hr h1{font-size:14px}
+.hr .badge{font-size:8px;padding:1px 5px;border-radius:20px;background:var(--card-bg);border:1px solid var(--card-border);color:var(--text-secondary);-webkit-text-fill-color:var(--text-secondary)}
+.ha{display:flex;gap:2px;align-items:center;flex-wrap:wrap}
+.tb{width:24px;height:24px;border-radius:50%;border:2px solid var(--card-border);cursor:pointer;transition:var(--transition)}
+.tb:hover{transform:scale(1.1)}.tb.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
+.tb[data-t="light"]{background:#f0f4f8}.tb[data-t="dark"]{background:#0f172a}.tb[data-t="cyber"]{background:#0a0a1a;border-color:#0ff}.tb[data-t="warm"]{background:#fef7f0}.tb[data-t="forest"]{background:#eef6ee}
+body.mobile .tb{width:20px;height:20px}
+.sr{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin:3px 0}
+.sc{background:var(--card-bg);backdrop-filter:blur(12px);border:1px solid var(--card-border);border-radius:6px;padding:5px 2px;text-align:center;box-shadow:var(--card-shadow)}
+.sc .sn{font-size:14px;font-weight:700;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sc .sl{font-size:7px;color:var(--text-secondary);margin-top:0;line-height:1.2}
+body.mobile .sc .sn{font-size:12px}.fr{display:flex;gap:3px;margin:3px 0;flex-wrap:wrap}
+.fr input,.fr select{padding:4px 7px;border-radius:6px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);font-size:11px;transition:var(--transition);flex:1;min-width:50px;font-family:var(--font)}
+body.mobile .fr input,body.mobile .fr select{font-size:16px;padding:6px 7px}.fr select{cursor:pointer}
+.fr input:focus,.fr select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(99,102,241,0.15)}
+.chips{display:flex;gap:2px;margin-bottom:3px;flex-wrap:wrap}
+.chip{padding:2px 7px;border-radius:20px;font-size:9px;font-weight:500;cursor:pointer;border:1px solid var(--input-border);background:var(--card-bg);color:var(--text-secondary);transition:var(--transition);user-select:none;white-space:nowrap}
+body.mobile .chip{font-size:8px;padding:3px 6px}.chip.active{border-color:var(--accent);background:var(--gradient);color:#fff;-webkit-text-fill-color:#fff}
+.rb{display:flex;gap:3px;margin:3px 0;flex-wrap:wrap;align-items:center}
+.rb .rbn{padding:3px 8px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--input-border);background:var(--card-bg);color:var(--text-secondary);transition:var(--transition)}
+body.mobile .rbn{font-size:9px;padding:4px 7px}
+.rbn.active{background:var(--gradient);color:#fff;border-color:transparent;-webkit-text-fill-color:#fff}
+.rbn .pop{font-size:8px;opacity:.7;margin-left:2px}
+.sp-input{padding:3px 8px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);font-size:10px;font-family:var(--font);width:80px}
+body.mobile .sp-input{font-size:14px;width:100px}
+.mc{padding-top:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:7px;margin-bottom:12px}
+body.mobile .grid{grid-template-columns:1fr;gap:5px}
+.card{background:var(--card-bg);backdrop-filter:blur(12px);border:1px solid var(--card-border);border-radius:var(--radius);padding:9px;box-shadow:var(--card-shadow);transition:var(--transition);position:relative;overflow:hidden}
+body.mobile .card{padding:7px}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.1)}
+body.mobile .card:hover{transform:none}
+.card.visited{border-left:3px solid var(--success)}
+.card .ch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;gap:4px}
+.card h3{font-size:12px;font-weight:600;display:flex;align-items:center;gap:3px;line-height:1.3}
+.card .bt{font-size:8px;padding:1px 5px;border-radius:10px;color:#fff;font-weight:600;white-space:nowrap;flex-shrink:0}
+.bt.residential{background:var(--badge-res)}.bt.commercial{background:var(--badge-com)}.bt.solar-market{background:var(--badge-sol)}.bt.hardware{background:var(--badge-hard)}.bt.industrial{background:var(--badge-ind)}.bt.mixed{background:var(--badge-mix)}
+.card .rating{display:flex;gap:1px;margin:1px 0}
+.card .star{font-size:10px;color:#d1d9e6}.card .star.filled{color:#f59e0b}
+.card .desc{font-size:10px;color:var(--text-secondary);line-height:1.5;margin-bottom:2px}
+.card .tags{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:0}
+.card .tag{font-size:8px;padding:1px 4px;border-radius:5px;background:var(--input-bg);border:1px solid var(--input-border);color:var(--text-secondary)}
+.card .ac{display:flex;gap:2px;margin-top:2px;flex-wrap:wrap}
+.btn-sm{font-size:9px;padding:3px 7px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);cursor:pointer;transition:var(--transition);font-family:var(--font);touch-action:manipulation}
+body.mobile .btn-sm{font-size:11px;padding:5px 9px;min-height:30px}
+.btn-sm.exp{border-color:var(--accent);color:var(--accent)}
+.btn-sm.exp:hover,.btn-sm.exp.on{background:var(--accent);color:#fff}
+.btn-sm.vis{border-color:var(--success);color:var(--success)}
+.btn-sm.vis:hover,.btn-sm.vis.done{background:var(--success);color:#fff}
+.btn-sm.gps{border-color:#3b82f6;color:#3b82f6;font-size:8px}
+.btn-sm.gps:hover,.btn-sm.gps.hg{background:#3b82f6;color:#fff}
+.card .gb{font-size:7px;padding:1px 4px;border-radius:3px;background:rgba(59,130,246,.12);color:#3b82f6;border:1px solid rgba(59,130,246,.2);display:inline-block}
+.card .gb.ng{color:var(--text-secondary);background:var(--input-bg);border-color:var(--card-border)}
+.dp{max-height:0;overflow:hidden;transition:max-height .45s ease,opacity .3s ease,padding .3s ease;opacity:0;padding:0}
+.dp.open{max-height:2500px;opacity:1;padding:5px 0 2px}
+.ds{margin-bottom:5px}.ds:last-child{margin-bottom:0}
+.ds .dh{font-size:9px;font-weight:600;color:var(--accent);margin-bottom:1px;display:flex;align-items:center;gap:3px;cursor:pointer}
+.ds .db{font-size:10px;color:var(--text-secondary);line-height:1.5}
+.ds .db strong{color:var(--text)}
+.dv{height:1px;background:var(--card-border);margin:3px 0}
+.sl{margin:2px 0}.si{display:flex;align-items:flex-start;gap:3px;padding:2px 0;border-bottom:1px solid var(--card-border);font-size:9px}
+.si:last-child{border-bottom:none}.si .sic{font-size:10px;flex-shrink:0}
+.si .sn{font-weight:500;color:var(--text)}.si .sd{color:var(--text-secondary);font-size:8px}
+.sn2{font-size:8px;color:var(--text-secondary);font-style:italic;padding:2px 5px;background:var(--input-bg);border-radius:4px;border:1px dashed var(--card-border);margin-top:2px}
+.vns{margin-top:3px}.vnr{display:flex;gap:3px;align-items:center;flex-wrap:wrap;margin:2px 0}
+.vnb{font-size:9px;padding:3px 8px;border-radius:5px;border:1px solid var(--warning);background:transparent;color:var(--warning);cursor:pointer;transition:var(--transition);font-family:var(--font);touch-action:manipulation}
+body.mobile .vnb{font-size:11px;padding:5px 10px}
+.vnb:hover{background:var(--warning);color:#fff}
+.vnb.rec{background:var(--danger);color:#fff;border-color:var(--danger);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.vnb.pb{border-color:var(--success);color:var(--success)}.vnb.pb:hover{background:var(--success);color:#fff}
+.vnb.db{border-color:var(--danger);color:var(--danger)}.vnb.db:hover{background:var(--danger);color:#fff}
+.vnt{width:100%;min-height:32px;padding:5px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);font-size:10px;font-family:var(--font);resize:vertical;transition:var(--transition);margin:2px 0}
+.vnt:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(99,102,241,.12)}
+.vnm{font-size:8px;color:var(--text-secondary)}
+.vna audio{width:100%;height:28px;margin:2px 0}
+/* Photos */
+.photos{display:flex;flex-wrap:wrap;gap:4px;margin:3px 0}
+.photo-thumb{width:60px;height:60px;border-radius:6px;object-fit:cover;cursor:pointer;border:1px solid var(--card-border);transition:var(--transition)}
+.photo-thumb:hover{transform:scale(1.1)}
+.photo-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:1000;display:none;align-items:center;justify-content:center;cursor:pointer}
+.photo-modal img{max-width:95%;max-height:95%;border-radius:8px}
+.photo-modal.open{display:flex}
+/* Contacts */
+.ct-row{display:flex;gap:3px;margin:2px 0;flex-wrap:wrap}
+.ct-row input{flex:1;min-width:60px;padding:4px 6px;border-radius:4px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);font-size:9px;font-family:var(--font)}
+body.mobile .ct-row input{font-size:14px;padding:6px}
+.ct-row select{padding:4px;border-radius:4px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);font-size:9px;font-family:var(--font)}
+.ct-list{max-height:80px;overflow-y:auto;font-size:9px;margin:3px 0}
+.ct-item{padding:2px 4px;border-bottom:1px solid var(--card-border);display:flex;justify-content:space-between;gap:4px}
+.ct-item .ct-del{cursor:pointer;color:var(--danger);font-size:10px}
+/* Tabs */
+.tab-bar{display:flex;gap:3px;margin:4px 0;flex-wrap:wrap}
+.tab-btn{padding:5px 10px;border-radius:6px 6px 0 0;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--card-border);background:var(--card-bg);color:var(--text-secondary);transition:var(--transition)}
+body.mobile .tab-btn{font-size:9px;padding:5px 8px}
+.tab-btn.active{background:var(--gradient);color:#fff;border-color:transparent;-webkit-text-fill-color:#fff}
+.tc{display:none;background:var(--card-bg);backdrop-filter:blur(12px);border:1px solid var(--card-border);border-top:none;border-radius:0 8px 8px 8px;padding:10px;box-shadow:var(--card-shadow);margin-bottom:12px}
+.tc.active{display:block}
+/* Map */
+#mapContainer{height:400px;border-radius:8px;margin-bottom:8px}
+body.mobile #mapContainer{height:280px}
+#mapContainer .leaflet-container{background:var(--input-bg);border-radius:8px}
+/* Calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin:5px 0}
+.cal-day{padding:4px;border-radius:4px;background:var(--input-bg);border:1px solid var(--card-border);font-size:8px}
+.cal-day .cd{font-weight:600;color:var(--accent)}
+.cal-day .cdd{color:var(--text-secondary);margin-top:1px}
+.cal-day .cdd span{display:inline-block;margin-right:2px;padding:0 3px;border-radius:3px;background:rgba(16,185,129,.12);color:var(--success)}
+/* Report */
+.rpt-table{width:100%;border-collapse:collapse;font-size:9px}
+.rpt-table th,.rpt-table td{padding:3px 5px;text-align:left;border-bottom:1px solid var(--card-border)}
+.rpt-table th{font-weight:600;color:var(--accent);font-size:8px;background:var(--input-bg)}
+.rpt-table tr:hover{background:var(--input-bg)}
+.rpt-export{font-size:10px;padding:5px 10px;border-radius:5px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;transition:var(--transition);font-family:var(--font);margin:4px 0}
+.rpt-export:hover{background:var(--accent);color:#fff}
+.rpt-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:4px;margin-bottom:6px}
+.rpt-card{background:var(--input-bg);border:1px solid var(--card-border);border-radius:6px;padding:5px;text-align:center}
+.rpt-card .rn{font-size:15px;font-weight:700;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.rpt-card .rl{font-size:8px;color:var(--text-secondary)}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(100px);padding:6px 14px;border-radius:6px;background:var(--card-bg);backdrop-filter:blur(20px);border:1px solid var(--card-border);color:var(--text);font-size:10px;box-shadow:0 8px 32px rgba(0,0,0,.15);opacity:0;transition:all .4s ease;z-index:999;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* Sync */
+.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin:0 3px;vertical-align:middle}
+.sync-dot.on{background:#10b981;box-shadow:0 0 6px rgba(16,185,129,.5)}
+.sync-dot.off{background:#6b7280}
+.sync-dot.err{background:#ef4444;box-shadow:0 0 6px rgba(239,68,68,.5)}
+.sync-dot.syncing{background:#f59e0b;animation:pulse 1s infinite}
+.st-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--card-border);flex-wrap:wrap}
+.st-row:last-child{border-bottom:none}
+.st-label{font-size:11px;font-weight:600;color:var(--text);min-width:120px}
+.st-desc{font-size:9px;color:var(--text-secondary)}
+.st-input{flex:1;min-width:150px;padding:6px 8px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);font-size:11px;font-family:var(--font)}
+.st-input:focus{outline:none;border-color:var(--accent)}
+.toggle{position:relative;width:36px;height:20px;border-radius:10px;background:var(--input-border);cursor:pointer;transition:var(--transition);flex-shrink:0}
+.toggle.on{background:var(--success)}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:var(--transition)}
+.toggle.on::after{left:18px}
+.pwa-install-btn{font-size:11px;padding:8px 16px;border-radius:8px;border:none;background:var(--gradient);color:#fff;cursor:pointer;font-family:var(--font);font-weight:600}
+.pwa-install-btn:hover{opacity:.9}
+.pwa-info{font-size:9px;color:var(--text-secondary);padding:8px;background:var(--input-bg);border-radius:6px;border:1px solid var(--card-border);margin:4px 0;line-height:1.6}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.card{animation:fadeIn .3s ease forwards}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sticky-header">
+<div class="hr">
+<div><h1>📍 MOOVED Hunter</h1><span class="badge">Ghana · 2026</span></div>
+<div class="ha">
+<input class="sp-input" id="salespersonInput" placeholder="Your name" onchange="saveSalesperson()">
+<button class="tb active" data-t="light" onclick="setTheme('light')"></button>
+<button class="tb" data-t="dark" onclick="setTheme('dark')"></button>
+<button class="tb" data-t="cyber" onclick="setTheme('cyber')"></button>
+<button class="tb" data-t="warm" onclick="setTheme('warm')"></button>
+<button class="tb" data-t="forest" onclick="setTheme('forest')"></button>
+</div></div>
+<div class="rb" id="regionBar"></div>
+<div class="sr">
+<div class="sc"><div class="sn" id="sTotal">0</div><div class="sl">Districts</div></div>
+<div class="sc"><div class="sn" id="sVisited">0</div><div class="sl">Visited</div></div>
+<div class="sc"><div class="sn" id="sPct">0%</div><div class="sl">Progress</div></div>
+<div class="sc"><div class="sn" id="sGps">0</div><div class="sl">GPS</div></div>
+<div class="sc"><div class="sn" id="sContacts">0</div><div class="sl">Contacts</div></div>
+<div class="sc"><div class="sn" id="sSync"><span class="sync-dot off"></span></div><div class="sl" id="sSyncLabel">Offline</div></div>
+</div>
+<div class="fr">
+<input type="text" id="searchBox" placeholder="Search..." oninput="render()">
+<select id="sortSelect" onchange="render()"><option value="default">Order</option><option value="rating">By potential ↓</option><option value="name">A-Z</option></select>
+</div>
+<div class="chips">
+<span class="chip active" data-f="all" onclick="setFilter('all',this)">All</span>
+<span class="chip" data-f="residential" onclick="setFilter('residential',this)">🏡Res</span>
+<span class="chip" data-f="commercial" onclick="setFilter('commercial',this)">🏢Comm</span>
+<span class="chip" data-f="solar-market" onclick="setFilter('solar-market',this)">🔋Solar</span>
+<span class="chip" data-f="hardware" onclick="setFilter('hardware',this)">🔧Hw</span>
+<span class="chip" data-f="industrial" onclick="setFilter('industrial',this)">🏭Ind</span>
+<span class="chip" data-f="mixed" onclick="setFilter('mixed',this)">🔄Mix</span>
+</div></div>
+
+<div class="mc">
+<div class="tab-bar">
+<span class="tab-btn active" data-tab="hunt" onclick="switchTab('hunt',this)">🎯 Hunt</span>
+<span class="tab-btn" data-tab="map" onclick="switchTab('map',this);initMap()">🗺️ Map</span>
+<span class="tab-btn" data-tab="cal" onclick="switchTab('cal',this)">📅 Calendar</span>
+<span class="tab-btn" data-tab="settings" onclick="switchTab('settings',this)">⚙️ Settings</span>
+<span class="tab-btn" data-tab="report" onclick="switchTab('report',this)">📊 Report</span>
+</div>
+
+<div class="tc active" id="tabHunt"><div class="grid" id="districtGrid"></div><div style="text-align:center;padding:6px 0"><button class="btn-sm" style="border-color:var(--danger);color:var(--danger)" onclick="resetAll()">🔄 Reset Region Data</button></div></div>
+
+<div class="tc" id="tabMap"><div id="mapContainer"></div><div style="font-size:9px;color:var(--text-secondary);margin-top:4px">📍 Markers colored by type. Size = rating. Click for name.</div></div>
+
+<div class="tc" id="tabCal"><div style="font-size:10px;color:var(--text-secondary);margin-bottom:4px">📅 Visit history by date</div><div class="cal-grid" id="calGrid"></div></div>
+
+<div class="tc" id="tabSettings">
+<div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:8px">⚙️ Sync & PWA Settings</div>
+
+<div class="st-row">
+<span class="st-label">🌐 Google Sheets URL</span>
+<input class="st-input" id="gsUrl" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveSyncConfig()">
+</div>
+<div class="st-row">
+<span class="st-label">🔄 Auto Sync</span>
+<div><div class="toggle" id="autoSyncToggle" onclick="toggleAutoSync()"></div></div>
+<div><span style="font-size:9px;color:var(--text-secondary)">Sync after each visit/save</span></div>
+</div>
+<div class="st-row">
+<span class="st-label">⏱️ Interval Sync</span>
+<select class="st-input" style="width:auto;flex:none" id="syncInterval" onchange="saveSyncConfig()">
+<option value="0">Manual only</option>
+<option value="5">Every 5 min</option>
+<option value="15">Every 15 min</option>
+<option value="30">Every 30 min</option>
+<option value="60">Every hour</option>
+</select>
+</div>
+<div class="st-row">
+<span class="st-label">📤 Last Sync</span>
+<span style="font-size:10px;color:var(--text-secondary)" id="lastSyncTime">Never</span>
+</div>
+<div class="st-row" style="border-bottom:none">
+<span class="st-label"></span>
+<button class="btn-sm" style="border-color:var(--accent);color:var(--accent)" onclick="syncNow()">📤 Sync Now</button>
+<button class="btn-sm" style="border-color:var(--warning);color:var(--warning)" onclick="testSync()">🔍 Test Connection</button>
+</div>
+
+<div style="height:12px"></div>
+<div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:8px">📱 PWA: Install as App</div>
+<div class="pwa-info" id="pwaInfo">This page can be installed on your phone home screen like a native app. It works offline too!</div>
+<div class="st-row" style="border-bottom:none">
+<button class="pwa-install-btn" id="pwaInstallBtn" style="display:none">📲 Install App</button>
+<span style="font-size:9px;color:var(--text-secondary)" id="pwaStatus"></span>
+</div>
+
+<div style="height:12px"></div>
+<div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:8px">📖 How to Set Up Google Sheets Sync</div>
+<div class="pwa-info" id="gsSetupGuide">Loading instructions...</div>
+
+<div style="height:12px"></div>
+<div style="font-size:11px;font-weight:600;color:var(--warning);margin-bottom:8px">⚖️ Legal Notice — Employee Monitoring</div>
+<div class="pwa-info">
+<b>⚠️ This app tracks your location and activity.</b><br>
+By using this app, you consent to:
+<ul style="margin:4px 0 0 14px;padding:0">
+<li>📍 GPS location recording when marking visits</li>
+<li>📊 Activity data syncing to company Google Sheets</li>
+<li>📸 Photo and audio recording during field work</li>
+</ul>
+This data is used solely for work coordination and performance tracking.<br>
+Under Ghana Data Protection Act (Act 843), your data is collected with consent for legitimate business purposes.<br>
+If you do not consent, do not use this app.
+</div>
+</div>
+
+<div class="tc" id="tabReport"><div class="rpt-summary" id="rptSummary"></div><button class="rpt-export" onclick="exportReport()">📥 Export CSV</button><button class="rpt-export" onclick="syncToCloud()" style="border-color:var(--success);color:var(--success);margin-left:4px">☁️ Sync to Cloud</button><div style="overflow-x:auto;margin-top:4px"><table class="rpt-table"><thead><tr><th>District</th><th>Type</th><th>★</th><th>Visited</th><th>GPS</th><th>Notes</th><th>Audio</th><th>Photos</th><th>Contacts</th></tr></thead><tbody id="rptBody"></tbody></table></div></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+<div class="photo-modal" id="photoModal" onclick="this.classList.remove('open')"><img id="photoModalImg"></div>
+
+<script>
+(function(){if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobi|Mobi/i.test(navigator.userAgent))document.body.classList.add('mobile')})();
+
+// PWA Service Worker
+if('serviceWorker' in navigator){navigator.serviceWorker.register('data:text/javascript;base64,'+btoa('self.addEventListener("fetch",function(e){e.respondWith(fetch(e.request).catch(function(){return new Response("Offline")}))})')).catch(()=>{})}
+
+// ═══════ IndexedDB ═══════
+let DB=null;
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('AvmV4',2);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('audio'))d.createObjectStore('audio',{keyPath:'id'});if(!d.objectStoreNames.contains('photos'))d.createObjectStore('photos',{keyPath:'id'});if(!d.objectStoreNames.contains('contacts')){const s=d.createObjectStore('contacts',{keyPath:'id',autoIncrement:true});s.createIndex('district','district',{unique:false})}};r.onsuccess=e=>{DB=e.target.result;res()};r.onerror=rej})}
+function dbStore(name){const t=DB.transaction([name],'readwrite');return t.objectStore(name)}
+function dbRead(name){const t=DB.transaction([name],'readonly');return t.objectStore(name)}
+function saveAudio(id,blob){return new Promise((res,rej)=>{const r=dbStore('audio').put({id,blob,ts:Date.now()});r.onsuccess=()=>res();r.onerror=e=>rej(e)})}
+function loadAudio(id){return new Promise(res=>{const r=dbRead('audio').get(id);r.onsuccess=e=>res(e.target.result?e.target.result.blob:null);r.onerror=()=>res(null)})}
+function delAudio(id){return new Promise(res=>{const r=dbStore('audio').delete(id);r.onsuccess=()=>res();r.onerror=()=>res()})}
+function savePhoto(id,blob,caption){return new Promise((res,rej)=>{const r=dbStore('photos').put({id,blob,ts:Date.now(),caption:caption||''});r.onsuccess=()=>res();r.onerror=e=>rej(e)})}
+function loadPhotos(districtId){return new Promise(res=>{const items=[];const r=dbRead('photos').openCursor();r.onsuccess=e=>{const c=e.target.result;if(c){if(c.value.id.startsWith(districtId+'_'))items.push(c.value);c.continue()}else res(items)};r.onerror=()=>res([])})}
+function delPhoto(id){return new Promise(res=>{dbStore('photos').delete(id);res()})}
+function saveContact(contact){return new Promise((res,rej)=>{const r=dbStore('contacts').add({...contact,ts:Date.now()});r.onsuccess=()=>res();r.onerror=rej})}
+function loadContacts(districtId){return new Promise(res=>{const items=[];const idx=dbRead('contacts').index('district');const r=idx.openCursor(IDBKeyRange.only(districtId));r.onsuccess=e=>{const c=e.target.result;if(c){items.push(c.value);c.continue()}else res(items)};r.onerror=()=>res([])})}
+function delContact(id){return new Promise(res=>{dbStore('contacts').delete(id);res()})}
+function allContacts(){return new Promise(res=>{const items=[];const r=dbRead('contacts').openCursor();r.onsuccess=e=>{const c=e.target.result;if(c){items.push(c.value);c.continue()}else res(items)};r.onerror=()=>res([])})}
+
+// ═══════ DATA ═══════
+const ACCRA=[
+{id:'airport-res',name:'Airport Residential Area',type:'residential',rating:5,lat:5.610,lng:-0.195,desc:'Ghana\'s wealthiest zone. Large villas. Frequent outages. HNW homes.',tags:['HNW','Villas','Frequent Outages','Embassy'],strategy:'Bilingual brochures. Demo 10-15kWh. Security guards for intel. Sat/Sun 9am-12pm.',pitch:'10-15kWh LFP + 5-8kW hybrid. <10ms switchover.',bestTime:'Sat-Sun 9-12. Weekdays 5-7pm.',transport:'Charter. Park at Villaggio.',nearby:'Cantonments, Dzorwulu, Airport City, Circle (R1)',steps:'1) Security guard WhatsApp. 2) Brochures at shops. 3) WhatsApp follow-up.',shops:['🔌 Solar inverter dealers (SRNE/Growatt/MUST) near Villaggio','🔧 Electrical wholesalers on main roads','📱 Marina Mall phone shops — recruit as agents']},
+{id:'cantonments',name:'Cantonments',type:'residential',rating:5,lat:5.585,lng:-0.175,desc:'Embassy district. Govt officials, expats. Very low outage tolerance.',tags:['Embassy','Expats','Officials','High Security'],strategy:'Local partner intro. English proposals. <10ms switchover.',pitch:'10-15kWh + gen auto-start option.',bestTime:'Weekdays 10-12, 2-4pm. Call ahead.',transport:'Charter. Enter via Cantonments Rd.',nearby:'Airport Res, Dzorwulu, Roman Ridge (R1)',steps:'1) Embassies facilities managers. 2) American House mats. 3) Local fixer.',shops:['🔧 Cantonments Rd hardware stores','🔌 Danquah Circle electrical shops','🛒 American House noticeboard — expat flyers']},
+{id:'east-legon',name:'East Legon',type:'residential',rating:5,lat:5.640,lng:-0.165,desc:'Fastest growing upscale. New luxury homes. Young affluent.',tags:['New Money','New Builds','Young','Social Media'],strategy:'Mats at cafes. Partner developers. Visit 3-6pm.',pitch:'10-15kWh. New builds: pre-wire.',bestTime:'Weekdays 3-6pm. Weekends 10-1pm.',transport:'Charter. Park A&C Mall.',nearby:'West Legon, Spintex (R2)',steps:'1) Real estate showrooms. 2) Cuppa Café mats. 3) Referral bonus.',shops:['🔌 Solar shops near A&C Mall','🔧 Lakeside Estate electrical stores','📱 A&C Mall electronics kiosks — recruit agents']},
+{id:'west-legon',name:'West Legon',type:'residential',rating:4,lat:5.655,lng:-0.200,desc:'Near Legon Uni. Mid-high homes + student housing.',tags:['Uni Area','Mid-High','Students','Dense'],strategy:'5-8kWh. Consignment with electronics shops. Weekend booth.',pitch:'5-8kWh LFP + 3-5kW. 2-3kWh UPS for students.',bestTime:'Weekends 9-2pm. Weekdays after 4pm.',transport:'Taxi/tro-tro.',nearby:'East Legon (R2)',steps:'1) Recruit phone shops as agents. 2) Weekend demo Legon Market.',shops:['🔌 Electrical shops near Uni gate (3+)','🔋 Legon Market solar kiosks','📱 GIMPA junction phone shops']},
+{id:'dzorwulu',name:'Dzorwulu',type:'residential',rating:4,lat:5.610,lng:-0.210,desc:'Mature high-end near airport. Business owners.',tags:['Established','Business Owners','High Demand'],strategy:'Partner clinics/schools. Referral bonus.',pitch:'10-15kWh + 5-8kW.',bestTime:'Weekdays 9-11am. Sat 10-2pm.',transport:'Charter. Central.',nearby:'Airport Res, Cantonments, Airport City (R1)',steps:'1) Dzorwulu Clinic partnership. 2) Market shop owners. 3) Koala noticeboard.',shops:['🔌 Dzorwulu Junction electrical shops','🛒 Koala Shopping Centre mats','📱 Palace Mall phone shops']},
+{id:'roman-ridge',name:'Roman Ridge',type:'residential',rating:4,lat:5.605,lng:-0.185,desc:'Most expensive gated community.',tags:['Ultra Luxury','Gated','Privacy','High Budget'],strategy:'Appointment via estate office. Concealed install.',pitch:'15-20kWh + 8kW. Whole-home backup.',bestTime:'By appointment.',transport:'Private car only.',nearby:'Part of R1 cluster.',steps:'1) Contact Roman Ridge Estate Mgt. 2) Leave proposal. 3) Free site survey.',shops:['🏢 Estate mgt office — primary gatekeeper']},
+{id:'adenta',name:'Adenta',type:'residential',rating:3,lat:5.680,lng:-0.155,desc:'Fast-growing peri-urban. New developments. Unstable grid.',tags:['Rising Middle','Peri-Urban','New Builds','Unstable'],strategy:'Partner contractors pre-install. Church groups. Flexible payment.',pitch:'5-8kWh. Instalment plan.',bestTime:'Weekends 10-4pm. Weekdays after 5pm.',transport:'Taxi from Madina.',nearby:'Madina, Tema (R4)',steps:'1) Building material suppliers → contractor contacts. 2) Church partnerships.',shops:['🔌 Adenta Market electrical section (5-6 shops)','🔧 Adenta hardware zone','🔋 Solar shop near Shell station']},
+{id:'dansoman',name:'Dansoman',type:'residential',rating:3,lat:5.540,lng:-0.245,desc:'Mature middle class. High density. Shop-home mix.',tags:['Middle Class','Dense','Shop-Home'],strategy:'Dual pitch: shops + homes. Bundle discount.',pitch:'Shops 3-5kWh. Homes 5-8kWh.',bestTime:'Weekdays 9-12pm. Weekends 10-2pm.',transport:'Taxi from Kaneshie.',nearby:'Kaneshie, Teshie, Nungua (R5)',steps:'1) Shop-to-shop Last Stop. 2) Market booth. 3) Sahara centre.',shops:['🔌 Dansoman Last Stop solar dealer','🔧 Dansoman Market electrical section','🛒 Sahara Shopping Centre']},
+{id:'cbd',name:'Central Business District',type:'commercial',rating:4,lat:5.550,lng:-0.200,desc:'Core hub. Banks, HQs. Massive daytime population.',tags:['Banks','HQs','High Power','Daytime'],strategy:'B2B: UPS+ESS for servers. Facilities managers.',pitch:'20-50kWh offices. 5-10kWh individual.',bestTime:'Mon-Thu 8:30-11am.',transport:'Walking. Park Makola.',nearby:'Osu, Ridge, Abossey Okai (R3)',steps:'1) Cedi House, SSNIT Tower, WTC. 2) Leave proposal at reception. 3) 3-day follow-up.',shops:['🔌 High St electrical wholesalers','🔧 Makola electronics annex','🔋 UTC area solar kiosks']},
+{id:'airport-city',name:'Airport City',type:'commercial',rating:4,lat:5.600,lng:-0.200,desc:'Modern commercial. Hotels, offices, malls.',tags:['Modern','Hotels','Offices','High Spend'],strategy:'Hotels emergency backup. Offices centralised ESS.',pitch:'Hotels 30-100kWh. Offices 20-50kWh.',bestTime:'Weekdays 9-11am, 2-4pm.',transport:'Charter. Park Marina Mall.',nearby:'Airport Res, Dzorwulu (R1)',steps:'1) Hotel chief engineer. 2) Office mgmt. 3) Marina Mall shop-to-shop.',shops:['🔌 Solar shop near Holiday Inn','🔧 Electrical supply near construction']},
+{id:'osu',name:'Osu (Oxford Street)',type:'commercial',rating:4,lat:5.560,lng:-0.175,desc:'Busiest strip. Restaurants, bars, retail.',tags:['High Street','Restaurants','Retail','Night'],strategy:'Restaurants freezer/AC. Retail POS backup. Evening.',pitch:'Restaurants 5-10kWh. Retail 3-5kWh.',bestTime:'Tue-Thu 3-6pm. Sat 10-1pm.',transport:'Walking. Park Frankies.',nearby:'Labone, CBD, Ridge (R3)',steps:'1) Restaurants quiet hours 3-5pm. 2) Cards at Frankies.',shops:['🔌 Osu electronics opp Papaye','📱 Oxford St phone shops (10+) — recruit agents']},
+{id:'spintex',name:'Spintex Road',type:'commercial',rating:4,lat:5.620,lng:-0.140,desc:'Major corridor. Dense shops, factories, solar stores.',tags:['Corridor','Factories','Solar Shops','Wholesale'],strategy:'Visit existing solar shops → MOOVED distro. Factory C&I.',pitch:'Shops: become MOOVED distributor. Factories: 20-50kWh.',bestTime:'Wed 9-12, 2-4pm.',transport:'Charter essential. 8km road.',nearby:'East Legon, West Legon (R2)',steps:'1) Solar shop crawl both sides. 2) Factories north of Tema Jct.',shops:['🔌 Spintex Solar & Electricals (Felicity stock)','🔌 Solar Shop near MTN','🔧 Spintex Cable Wholesalers','🔋 Okomfo Anokye Rd solar cluster (5+ shops)']},
+{id:'circle',name:'Kwame Nkrumah Circle',type:'solar-market',rating:5,lat:5.570,lng:-0.220,desc:'Accra\'s largest PV/electronics hub.',tags:['PV Hub','Dealer Dense','Price Sensitive','High Volume'],strategy:'⚡ TOP! Every PV/electronics shop. Samples + pricelist.',pitch:'Wholesale pricing + display unit + training.',bestTime:'Tue-Thu 9-1pm.',transport:'Charter/taxi. Walk from roundabout.',nearby:'Airport Res, Cantonments (R1)',steps:'1) Start roundabout, spiral outward. 2) 3-min pitch + pricelist + WhatsApp. 3) Follow-up 1 week.',shops:['🔌 Main road solar dealers (12+) cluster','🔌 Adom Electricals — multi-brand','🔋 Circle Battery House','🔧 Circle Cable Mart','🔌 God is King Solar — SRNE specialist','🔌 Circle Inverter Specialists']},
+{id:'makola',name:'Makola Market',type:'solar-market',rating:3,lat:5.545,lng:-0.210,desc:'West Africa\'s largest open market.',tags:['Open Market','Informal','Heavy Traffic'],strategy:'Brand exposure mobile booth. Recruit agents.',pitch:'2-3kWh for traders.',bestTime:'Weekdays 8-11am.',transport:'Walking from CBD.',nearby:'CBD, Abossey Okai (R3)',steps:'1) Small demo electronics section. 2) Recruit 1-2 agents. 3) Max 2hrs.',shops:['🔌 Makola electronics row (Zone 3)','🔧 Electrical supplies area']},
+{id:'kaneshie-mkt',name:'Kaneshie Market',type:'solar-market',rating:3,lat:5.550,lng:-0.235,desc:'Large market with electronics section.',tags:['General Market','Electronics Zone'],strategy:'Find distributors in electronics section.',pitch:'Distributor/agent model.',bestTime:'Weekdays 9-1pm.',transport:'Taxi/tro-tro.',nearby:'Dansoman, Teshie (R5)',steps:'1) Electronics zone. 2) All PV stalls. 3) Top 2 for MOOVED.',shops:['🔌 Kaneshie Electronics Market','🔋 Kaneshie Solar Kiosk','🔧 Kaneshie Cable Dealers']},
+{id:'abossey-okai',name:'Abossey Okai',type:'hardware',rating:4,lat:5.555,lng:-0.225,desc:'Largest hardware district. Dense hardware, cables.',tags:['Hardware','Auto Parts','Cables'],strategy:'Consign MOOVED at hardware stores. Contractor channel.',pitch:'Consignment + installer referral cards. GHS 100 commission.',bestTime:'Weekdays 9-2pm.',transport:'Taxi. Walkable grid.',nearby:'CBD, Okaishie (R3)',steps:'1) Top 10 hardware stores. 2) Leave installer biz cards.',shops:['🔧 Abossey Okai Hardware Superstore','🔧 Abossey Cable Centre','🔌 Abossey Electrical Wholesale']},
+{id:'okaishie',name:'Okaishie',type:'hardware',rating:3,lat:5.548,lng:-0.215,desc:'Old commercial. Hardware, building materials wholesale.',tags:['Wholesale','Old Commercial'],strategy:'Wholesale model: shelf space.',pitch:'Wholesale pricing. Display rack + training.',bestTime:'Weekdays 8-1pm.',transport:'Walking from Abossey Okai.',nearby:'Abossey Okai, CBD (R3)',steps:'1) 3-4 largest wholesalers. 2) Wholesale pricelist.',shops:['🔧 Okaishie Building Materials','🔌 Okaishie Electronics Wholesale']},
+{id:'tema',name:'Tema',type:'industrial',rating:4,lat:5.650,lng:-0.010,desc:'Largest industrial port (25km). Factories, cold storage.',tags:['Port','Factories','Cold Storage','High Usage'],strategy:'50-200kWh industrial. Cold storage extreme need.',pitch:'50-200kWh 3-phase. ROI vs diesel.',bestTime:'Mon-Thu 9-12pm.',transport:'Charter essential. Full day.',nearby:'Ashaiman, Madina (R4)',steps:'1) Get factory list Tema Industrial Zone. 2) Call ahead.',shops:['🔌 Tema Industrial Area solar shop','🔧 Tema Cable & Electrical heavy duty','🔌 Harbour electrical wholesalers']},
+{id:'ashaiman',name:'Ashaiman',type:'mixed',rating:3,lat:5.695,lng:-0.030,desc:'Dense near Tema. Market + residential.',tags:['Dense','Market','Low Income'],strategy:'Small systems + flexible payment. Community leaders.',pitch:'2-3kWh basic. GHS 50/week.',bestTime:'Weekends 9-3pm.',transport:'Taxi from Tema.',nearby:'Tema, Adenta (R4)',steps:'1) Partner assemblyman/chief. 2) Recruit 2-3 agents.',shops:['🔌 Ashaiman Main Market electronics','🔧 Ashaiman Cable Junction']},
+{id:'madina',name:'Madina',type:'mixed',rating:3,lat:5.680,lng:-0.175,desc:'Large diverse comm. near Legon. Market + residential.',tags:['Uni Area','Mixed','Market','Dense'],strategy:'Students UPS. Shops medium. Phone shop partners.',pitch:'Students 1-2kWh. Shops 3-5kWh. Homes 5-8kWh.',bestTime:'Weekends 9-3pm. Weekdays after 3pm.',transport:'Tro-tro from Legon.',nearby:'Adenta, Tema (R4)',steps:'1) Market booth Madina Market. 2) Partner phone/electronics shops.',shops:['🔌 Madina Market electronics zone (8+ shops)','🔋 Madina Solar Shop near station','📱 Phone shops near station — agents']},
+{id:'teshie',name:'Teshie',type:'mixed',rating:2,lat:5.575,lng:-0.100,desc:'Coastal traditional. Fish market.',tags:['Coastal','Traditional','Fish Market'],strategy:'Low-cost 3-5kWh. Partner Susu groups.',pitch:'3kWh basic. Group discount.',bestTime:'Weekdays 6-10am.',transport:'Taxi or tro-tro.',nearby:'Nungua, Dansoman (R5)',steps:'1) Find Susu group leader. 2) Group discount.',shops:['🔌 Teshie Naa Kaye Electronics','🔧 Teshie Market electrical section']},
+{id:'nungua',name:'Nungua',type:'mixed',rating:2,lat:5.600,lng:-0.075,desc:'Coastal east of Teshie.',tags:['Coastal','Dense','Low Income'],strategy:'Community promo. Local agent.',pitch:'2-3kWh entry. Agent GHS 50.',bestTime:'Weekends 9-1pm.',transport:'Taxi from Teshie.',nearby:'Teshie, Dansoman (R5)',steps:'1) Identify shop owner agent. 2) 5 brochures + 1 demo.',shops:['🔌 Nungua Main Market electronics','🔧 Nungua Junction Hardware']}];
+const KUMASI=[
+{id:'k-adum',name:'Adum (CBD)',type:'commercial',rating:4,lat:6.685,lng:-1.624,desc:'Kumasi CBD. Banks, shops, offices.',tags:['CBD','Banks','High Traffic'],strategy:'B2B office ESS + PV dealer visit.',pitch:'10-30kWh offices. 5-10kWh shops.',bestTime:'Weekdays 9-11am.',transport:'Walking. Park Adum station.',nearby:'Kejetia, Asafo',steps:'1) Kejetia area solar shops. 2) Office facilities.',shops:['🔌 Adum electrical shops (5+)','🔧 Adum hardware stores']},
+{id:'k-kejetia',name:'Kejetia Market',type:'solar-market',rating:4,lat:6.690,lng:-1.628,desc:'West Africa\'s largest market.',tags:['Market','Traders','High Volume'],strategy:'Mobile demo booth. Recruit traders as agents.',pitch:'2-5kWh for stalls.',bestTime:'Weekdays 7-10am.',transport:'Walking from Adum.',nearby:'Adum, Asafo',steps:'1) Demo near electronics section. 2) Recruit 2-3 agents.',shops:['🔌 Kejetia electronics section (10+ stalls)','🔧 Electrical supplies area']},
+{id:'k-ahodwo',name:'Ahodwo / Nhyiaeso',type:'residential',rating:4,lat:6.700,lng:-1.640,desc:'Upscale Kumasi residential.',tags:['Upscale','Homes','Business Owners'],strategy:'High-end direct. Free survey.',pitch:'10-15kWh LFP.',bestTime:'Weekends 9-12pm.',transport:'Charter.',nearby:'Asokwa, Bantama',steps:'1) Security guards for intel. 2) Mats at shops.',shops:['🔌 Nearby electrical shops']},
+{id:'k-asokwa',name:'Asokwa',type:'residential',rating:3,lat:6.710,lng:-1.655,desc:'Growing residential area.',tags:['Growing','Residential','Mix'],strategy:'Partner local hardware shops. Community referrals.',pitch:'5-10kWh.',bestTime:'Weekends 10-2pm.',transport:'Taxi from city.',nearby:'Ahodwo, Bantama',steps:'1) Hardware consignment. 2) Community leader intro.',shops:['🔧 Asokwa hardware stores','🔌 Electrical shops near market']},
+{id:'k-asafo',name:'Asafo Market',type:'solar-market',rating:3,lat:6.680,lng:-1.618,desc:'Busy market with electronics.',tags:['Market','Electronics','Busy'],strategy:'Electronics stalls. Recruit agents.',pitch:'Small systems.',bestTime:'Weekdays 8-11am.',transport:'Taxi.',nearby:'Adum, Kejetia',steps:'1) Electronics section crawl. 2) Agent recruitment.',shops:['🔌 Asafo electronics stalls (5+)']},
+{id:'k-bantama',name:'Bantama',type:'mixed',rating:3,lat:6.720,lng:-1.660,desc:'Dense commercial + residential.',tags:['Dense','Mixed','High Traffic'],strategy:'Shop-home dual pitch.',pitch:'Shops 3-5kWh. Homes 5-8kWh.',bestTime:'Weekdays 9-12pm.',transport:'Taxi or tro-tro.',nearby:'Ahodwo, Asokwa',steps:'1) Shop-to-shop main road. 2) Residential referrals.',shops:['🔌 Bantama electrical shops (4+)','🔧 Hardware stores']},
+{id:'k-suame',name:'Suame Magazine',type:'industrial',rating:4,lat:6.710,lng:-1.640,desc:'Industrial zone. Workshops, manufacturing.',tags:['Industrial','Workshops','Manufacturing'],strategy:'Industrial ESS for workshops.',pitch:'20-50kWh 3-phase.',bestTime:'Weekdays 9-12pm.',transport:'Charter.',nearby:'Tafo, Asokwa',steps:'1) Large workshops. 2) Facilities manager.',shops:['🔧 Suame electrical wholesalers','🔌 Industrial supply shops']},
+{id:'k-tafo',name:'Tafo',type:'residential',rating:2,lat:6.725,lng:-1.645,desc:'High density residential.',tags:['Dense','Residential','Low-Mid'],strategy:'Low-cost systems. Local agent.',pitch:'3-5kWh basic.',bestTime:'Weekends 9-1pm.',transport:'Tro-tro.',nearby:'Suame, Asokwa',steps:'1) Recruit phone shop agent. 2) Community promo.',shops:['📱 Tafo phone shops — agents']}];
+const TAKORADI=[
+{id:'t-cbd',name:'Takoradi CBD',type:'solar-market',rating:4,lat:4.890,lng:-1.755,desc:'Western region commercial hub.',tags:['CBD','Market','High Traffic'],strategy:'PV shop crawl. Distro recruitment.',pitch:'Distributor/agent model.',bestTime:'Weekdays 9-12pm.',transport:'Walking. Park Market Circle.',nearby:'Chapel Hill, Airport Ridge',steps:'1) All PV/electronics shops. 2) Top candidates.',shops:['🔌 Market Circle solar shops (6+)','🔧 Electrical wholesale area']},
+{id:'t-airport',name:'Airport Ridge',type:'residential',rating:4,lat:4.900,lng:-1.770,desc:'Upmarket residential. Expats, oil staff.',tags:['Upscale','Expats','Oil & Gas'],strategy:'High-end direct. Estate agents.',pitch:'10-15kWh LFP. UPS-grade.',bestTime:'Weekends 10-1pm.',transport:'Charter.',nearby:'Chapel Hill, CBD',steps:'1) Estate agent partnerships. 2) Oil company expat community.',shops:['🔌 Nearby electrical shops on Chapel Hill Rd']},
+{id:'t-chapel',name:'Chapel Hill',type:'residential',rating:3,lat:4.895,lng:-1.765,desc:'Mid-high residential. Growing.',tags:['Mid-High','Growing','Residential'],strategy:'Direct residential. Referral programme.',pitch:'5-10kWh.',bestTime:'Weekends 9-12pm.',transport:'Taxi.',nearby:'Airport Ridge, CBD',steps:'1) Mats at convenience stores. 2) Referral offer.',shops:['🔧 Chapel Hill hardware stores','🔌 Electrical shops near junction']},
+{id:'t-effia',name:'Effia / Kwesimintsim',type:'mixed',rating:3,lat:4.880,lng:-1.740,desc:'Mixed residential + commercial.',tags:['Mixed','Growing','Dense'],strategy:'Shop-home dual. Agent model.',pitch:'Shops 3-5kWh. Homes 5-8kWh.',bestTime:'Weekdays 9-11am. Weekends 10-2pm.',transport:'Taxi or tro-tro.',nearby:'CBD, Chapel Hill',steps:'1) Market booth. 2) Agent recruitment phone shops.',shops:['🔌 Effia market electronics','🔧 Kwesimintsim hardware stores']},
+{id:'t-harbour',name:'Harbour Area',type:'industrial',rating:3,lat:4.875,lng:-1.735,desc:'Port area. Logistics, cold storage.',tags:['Port','Logistics','Cold Storage'],strategy:'Industrial ESS for port businesses.',pitch:'20-100kWh industrial.',bestTime:'Weekdays 9-11am.',transport:'Charter.',nearby:'CBD, Effia',steps:'1) Port businesses cold storage. 2) Logistics companies.',shops:['🔌 Harbour electrical supply','🔧 Industrial hardware suppliers']},
+{id:'t-sekondi',name:'Sekondi',type:'mixed',rating:2,lat:4.935,lng:-1.705,desc:'Historic city adjacent to Takoradi.',tags:['Historic','Mixed','Coastal'],strategy:'Low-cost systems. Community agents.',pitch:'3-5kWh basic.',bestTime:'Weekends 9-1pm.',transport:'Taxi from Takoradi.',nearby:'Takoradi CBD',steps:'1) Find local agent. 2) Community groups.',shops:['🔌 Sekondi market electronics','🔧 Local hardware stores']}];
+const REGIONS={accra:{name:'Accra',data:ACCRA},kumasi:{name:'Kumasi',data:KUMASI},takoradi:{name:'Takoradi',data:TAKORADI}};
+const REGION_KEYS=Object.keys(REGIONS);
+const ROUTES_ACCRA=[
+{name:'🎯 Golden — Airport Corridor',districts:['airport-res','cantonments','dzorwulu','roman-ridge','airport-city','circle'],note:'AM: Circle PV. PM: high-end res.',days:'1d'},
+{name:'🏡 East — Legon',districts:['east-legon','west-legon','spintex'],note:'½d Spintex + ½d East Legon',days:'1d'},
+{name:'🏢 City Centre',districts:['cbd','osu','ridge','labone','abossey-okai','okaishie','makola'],note:'AM CBD. PM Osu+HW',days:'1-2d'},
+{name:'🌆 Northern — Tema',districts:['adenta','madina','tema','ashaiman'],note:'Tema factories charter',days:'1-2d'},
+{name:'🌊 Coastal',districts:['dansoman','kaneshie-mkt','teshie','nungua'],note:'Focus Dansoman+Kaneshie',days:'1d'}];
+const STRATEGIES=[
+{title:'🏪 Distributor',text:'Dealer network at Circle, Spintex, Kaneshie. 10 shops in 30 days.'},
+{title:'🏠 High-End Direct',text:'Airport Res, Cantonments, East Legon. Free survey. <10ms + silent.'},
+{title:'🤝 Industry Partners',text:'Contractors, developers, electrical wholesalers. Pre-install.'},
+{title:'👥 Local Agent',text:'Shop owners/pastors/leaders. Commission per sale.'},
+{title:'🏭 B2B',text:'Tema factories, CBD offices, hotels. 20-200kWh. ROI calc.'},
+{title:'💬 Referral',text:'GHS 200 per referral. WhatsApp viral.'}];
+const TIPS=['📱 WhatsApp Business + auto-reply','🔋 Carry demo unit or 3D video','📄 100+ bilingual pricelists','📸 Build install photo library','🧭 Per district: material + WhatsApp → 3 days follow-up','🚗 Charter GHS 200-300/day','📊 Export CSV weekly','👔 MOOVED polo','☀️ Tue-Thu 9-12,2-5pm','💰 GHS 100 small change'];
+
+// ═══════ STATE ═══════
+let activeRegion=localStorage.getItem('avm_region')||'accra';
+let filter='all',expanded={};
+let allCheckins=JSON.parse(localStorage.getItem('avm_checkins')||'{}');
+let allNotes=JSON.parse(localStorage.getItem('avm_notes')||'{}');
+let allAudioMeta=JSON.parse(localStorage.getItem('avm_audiometa')||'{}');
+function getDistricts(){return REGIONS[activeRegion]?REGIONS[activeRegion].data:ACCRA}
+function key(s){return activeRegion+'_'+s}
+function getVisited(){return JSON.parse(localStorage.getItem('avm_v3_'+activeRegion)||'[]')}
+function setVisited(v){localStorage.setItem('avm_v3_'+activeRegion,JSON.stringify(v))}
+let visited=getVisited();
+function saveCheckins(){localStorage.setItem('avm_checkins',JSON.stringify(allCheckins))}
+function saveNotes(){localStorage.setItem('avm_notes',JSON.stringify(allNotes))}
+function saveAudioMeta(){localStorage.setItem('avm_audiometa',JSON.stringify(allAudioMeta))}
+function getSalesperson(){return localStorage.getItem('avm_sp')||''}
+function saveSalesperson(){const v=document.getElementById('salespersonInput').value;localStorage.setItem('avm_sp',v)}
+function getCheckins(id){const k=key(id);return allCheckins[k]||[]}
+function getLastCheckin(id){const c=getCheckins(id);return c.length?c[c.length-1]:null}
+function getCheckinCount(id){return getCheckins(id).length}
+function totalGps(){let c=0;for(let k in allCheckins)c+=allCheckins[k].length;return c}
+function getNotes(id){const k=key(id);return allNotes[k]||[]}
+
+// ═══════ GPS ═══════
+function doCheckin(id){
+  if(!navigator.geolocation){toast('GPS unavailable');return}
+  navigator.geolocation.getCurrentPosition(p=>{
+    const k=key(id);if(!allCheckins[k])allCheckins[k]=[];
+    allCheckins[k].push({ts:Date.now(),lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy,sp:getSalesperson()});
+    saveCheckins();render();toast('📍 GPS check-in recorded');
+  },()=>{toast('GPS failed — check permissions')},{enableHighAccuracy:true,timeout:10000});
+}
+function toggleVisit(id){
+  const i=visited.indexOf(id);
+  if(i>-1)visited.splice(i,1);else{visited.push(id);doCheckin(id)}
+  setVisited(visited);render();
+}
+
+// ═══════ AUDIO ═══════
+let recMR=null,recChunks=[],recFor=null;
+async function toggleRecord(id){
+  if(recMR&&recMR.state==='recording'){recMR.stop();toast('⏹️ Saving...');return}
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({audio:true});
+    recChunks=[];recFor=id;
+    const m=MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm';
+    recMR=new MediaRecorder(s,{mimeType:m});
+    recMR.ondataavailable=e=>{if(e.data.size>0)recChunks.push(e.data)};
+    recMR.onstop=async()=>{
+      s.getTracks().forEach(t=>t.stop());
+      const b=new Blob(recChunks,{type:m});
+      const aid=key(recFor)+'_'+Date.now();
+      try{await saveAudio(aid,b)}catch(e){toast('Audio save failed');return}
+      if(!allAudioMeta[key(recFor)])allAudioMeta[key(recFor)]=[];
+      allAudioMeta[key(recFor)].push({id:aid,ts:Date.now(),sp:getSalesperson()});
+      saveAudioMeta();toast('🎙️ Audio saved');render();
+    };
+    recMR.start();toast('🎙️ Recording...');render();
+  }catch(e){toast('Mic denied: '+e.message)}
+}
+function isRec(id){return recMR&&recMR.state==='recording'&&recFor===id}
+
+// ═══════ PHOTOS ═══════
+async function takePhoto(id){
+  const input=document.createElement('input');
+  input.type='file';input.accept='image/*';input.capture='environment';
+  input.onchange=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    try{
+      const blob=f;const pid=key(id)+'_'+Date.now();
+      await savePhoto(pid,blob,'');
+      toast('📸 Photo saved');render();
+    }catch(ex){toast('Photo save failed')}
+  };
+  input.click();
+}
+let photoViewData=null;
+function viewPhoto(id){const el=document.getElementById('photoModalImg');const modal=document.getElementById('photoModal');photoViewData=id;modal.classList.add('open')}
+
+// Update photo modal
+async function showPhotoInModal(pid){
+  try{
+    const r=dbRead('photos').get(pid);
+    r.onsuccess=e=>{
+      const data=e.target.result;
+      if(data&&data.blob){const url=URL.createObjectURL(data.blob);document.getElementById('photoModalImg').src=url;document.getElementById('photoModal').classList.add('open')}
+    }
+  }catch(e){}
+}
+window.showPhotoInModal=showPhotoInModal;
+
+// ═══════ CONTACTS ═══════
+async function addContact(id){
+  const name=document.getElementById('cn_'+id);
+  const phone=document.getElementById('cp_'+id);
+  const interest=document.getElementById('ci_'+id);
+  if(!name||!name.value.trim()){toast('Name required');return}
+  await saveContact({district:id,region:activeRegion,name:name.value.trim(),phone:phone?phone.value:'',interest:interest?interest.value:'',sp:getSalesperson(),ts:Date.now()});
+  name.value='';if(phone)phone.value='';
+  toast('✅ Contact saved');render();
+}
+async function delContact(id){
+  await delContact(id);render();
+}
+
+// ═══════ RENDER ═══════
+function render(){
+  const D=getDistricts();
+  const grid=document.getElementById('districtGrid');
+  const q=document.getElementById('searchBox').value.toLowerCase().trim();
+  const sort=document.getElementById('sortSelect').value;
+  let list=D.filter(d=>{if(filter!=='all'&&d.type!==filter)return false;if(q&&!d.name.toLowerCase().includes(q)&&!d.desc.toLowerCase().includes(q)&&!d.tags.some(t=>t.toLowerCase().includes(q)))return false;return true});
+  if(sort==='rating')list.sort((a,b)=>b.rating-a.rating);else if(sort==='name')list.sort((a,b)=>a.name.localeCompare(b.name));
+  const tl={'residential':'🏡Res','commercial':'🏢Comm','solar-market':'🔋Solar','hardware':'🔧Hw','industrial':'🏭Ind','mixed':'🔄Mix'};
+  document.getElementById('salespersonInput').value=getSalesperson();
+  grid.innerHTML=list.map(d=>{
+    const v=visited.includes(d.id),ex=expanded[d.id]||false;
+    const stars=Array(5).fill(0).map((_,i)=>`<span class="star${i<d.rating?' filled':''}">★</span>`).join('');
+    const ci=getCheckinCount(d.id);const lc=getLastCheckin(d.id);const notes=getNotes(d.id);const am=allAudioMeta[key(d.id)]||[];
+    const gb=lc?`<span class="gb">📍${new Date(lc.ts).toLocaleDateString()}</span>`:`<span class="gb ng">📍No GPS</span>`;
+    const shopsHtml=d.shops&&d.shops.length?d.shops.map(s=>{
+      const m=s.match(/^(.+?)\s*—\s*(.+)/);return `<div class="si"><span class="sic">${s.charAt(0)}</span><div><div class="sn">${m?m[1].trim():s.substring(2)}</div>${m?'<div class="sd">'+m[2].trim()+'</div>':''}</div></div>`;
+    }).join('')+'<div class="sn2">⚠️ Types — verify on ground</div>':'';
+    const notesHtml=notes.length?notes.slice(-3).reverse().map(n=>{const d2=new Date(n.ts);return `<div style="font-size:8px;padding:2px 0;border-bottom:1px solid var(--card-border)"><span style="color:var(--text-secondary)">${d2.toLocaleDateString()} ${d2.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span><br>${n.text}</div>`}).join(''):'<div style="font-size:8px;color:var(--text-secondary)">No notes</div>';
+    const audioHtml=am.length?am.slice(-1).map(a=>`<div class="vna"><audio controls src="" id="aud_${a.id}"></audio><button class="vnb db" onclick="deleteAudioNote('${a.id}','${d.id}')" style="font-size:8px;padding:2px 5px">🗑️</button></div>`).join(''):'';
+    const isRecording=isRec(d.id);
+
+    // Photos
+    let photoHtml='<div class="photos" id="ph_'+d.id+'"><button class="btn-sm" onclick="takePhoto(\''+d.id+'\')" style="border-color:var(--accent2);color:var(--accent2)">📷 Photo</button><span style="font-size:8px;color:var(--text-secondary);padding:4px" id="phc_'+d.id+'">Loading...</span></div>';
+
+    // Contacts
+    const contactHtml=`<div class="ct-row"><input placeholder="Name" id="cn_${d.id}"><input placeholder="Phone" id="cp_${d.id}"><select id="ci_${d.id}"><option value="hot">🔥 Hot</option><option value="warm">💛 Warm</option><option value="cold">❄️ Cold</option></select><button class="btn-sm" style="border-color:var(--success);color:var(--success)" onclick="addContact('${d.id}')">+ Add</button></div><div class="ct-list" id="ctl_${d.id}"><span style="font-size:8px;color:var(--text-secondary)">Loading...</span></div>`;
+
+    return `<div class="card${v?' visited':''}">
+      <div class="ch"><h3>📍 ${d.name}</h3><span class="bt ${d.type}">${tl[d.type]||d.type}</span></div>
+      <div class="rating">${stars} ${gb}</div>
+      <div class="desc">${d.desc}</div>
+      <div class="tags">${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="dp${ex?' open':''}">
+        <div class="dv"></div>
+        <div class="ds"><div class="dh">🎯 Strategy</div><div class="db">${d.strategy}</div></div>
+        <div class="ds"><div class="dh">💰 Pitch · ⏰ Time · 🚗 Transport</div><div class="db"><strong>Pitch:</strong> ${d.pitch}<br><strong>Time:</strong> ${d.bestTime}<br><strong>Transport:</strong> ${d.transport}<br><strong>Combine:</strong> ${d.nearby}<br><strong>Steps:</strong> ${d.steps}</div></div>
+        <div class="dv"></div>
+        <div class="ds"><div class="dh">🏪 What to Look For</div>${shopsHtml}</div>
+        <div class="dv"></div>
+        <div class="ds">
+          <div class="dh" onclick="event.stopPropagation()">🎙️ Voice · 📝 Notes</div>
+          <div class="vnr"><button class="vnb${isRecording?' rec':''}" onclick="toggleRecord('${d.id}')">${isRecording?'⏹️ Stop':'🎙️ Record'}</button><span style="font-size:8px;color:var(--text-secondary)">${am.length} recording(s)</span></div>
+          ${audioHtml}
+          <textarea class="vnt" id="nt_${d.id}" placeholder="Type a note..."></textarea>
+          <div class="vnr"><button class="vnb" style="border-color:var(--accent);color:var(--accent)" onclick="saveNote('${d.id}')">💾 Save</button></div>
+          <div class="vnm">${notes.length} note(s) · Last: ${notes.length?new Date(notes[notes.length-1].ts).toLocaleDateString():'none'}</div>
+          <div style="margin-top:3px;max-height:80px;overflow-y:auto">${notesHtml}</div>
+        </div>
+        <div class="dv"></div>
+        <div class="ds"><div class="dh" onclick="event.stopPropagation()">📸 Photos</div>${photoHtml}</div>
+        <div class="dv"></div>
+        <div class="ds"><div class="dh" onclick="event.stopPropagation()">👤 Contacts</div>${contactHtml}</div>
+      </div>
+      <div class="ac" style="margin-top:${ex?'1px':'3px'}">
+        <button class="btn-sm exp${ex?' on':''}" onclick="event.stopPropagation();toggleExpand('${d.id}')">${ex?'▲ Less':'▼ More'}</button>
+        <button class="btn-sm vis${v?' done':''}" onclick="event.stopPropagation();toggleVisit('${d.id}')">${v?'✓':'○'} Visit</button>
+        <button class="btn-sm gps${ci?' hg':''}" onclick="event.stopPropagation();doCheckin('${d.id}')">📍${ci||''}</button>
+      </div>
+    </div>`;
+  }).join('');
+  if(grid.innerHTML==='')grid.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:12px">No matches 🔍</div>';
+  upd();renderRoutes();renderReport();renderCalendar();
+  // Load photos & contacts async
+  list.forEach(d=>{loadPhotosAsync(d.id);loadContactsAsync(d.id)});
+}
+
+async function loadPhotosAsync(did){
+  const el=document.getElementById('phc_'+did);if(!el)return;
+  try{
+    const photos=await loadPhotos(key(did));
+    el.textContent=photos.length+' photo(s)';
+    const c=document.getElementById('ph_'+did);if(!c)return;
+    // Remove old thumbs
+    c.querySelectorAll('.photo-thumb').forEach(x=>x.remove());
+    photos.slice(-4).forEach(p=>{
+      const url=URL.createObjectURL(p.blob);
+      const img=document.createElement('img');
+      img.className='photo-thumb';img.src=url;img.dataset.pid=p.id;
+      img.onclick=()=>showPhotoInModal(p.id);
+      c.insertBefore(img,el);
+    });
+  }catch(e){if(el)el.textContent='Error loading'}
+}
+async function loadContactsAsync(did){
+  const el=document.getElementById('ctl_'+did);if(!el)return;
+  try{
+    const contacts=await loadContacts(did);
+    if(!contacts.length){el.innerHTML='<span style="font-size:8px;color:var(--text-secondary)">No contacts yet</span>';return}
+    el.innerHTML=contacts.map(c=>{
+      const ic=c.interest==='hot'?'🔥':c.interest==='warm'?'💛':'❄️';
+      return `<div class="ct-item"><span>${ic} ${c.name} ${c.phone?'📞'+c.phone:''}</span><span class="ct-del" onclick="delContact(${c.id})">✕</span></div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<span style="font-size:8px;color:var(--text-secondary)">Error</span>'}
+}
+
+function saveNote(id){
+  const ta=document.getElementById('nt_'+id);if(!ta||!ta.value.trim())return;
+  const k=key(id);if(!allNotes[k])allNotes[k]=[];
+  allNotes[k].push({ts:Date.now(),text:ta.value.trim(),sp:getSalesperson()});
+  saveNotes();ta.value='';toast('📝 Note saved');render();
+}
+function toggleExpand(id){expanded[id]=!expanded[id];render()}
+
+function upd(){
+  const D=getDistricts();
+  const pct=Math.round(visited.length/D.length*100);
+  document.getElementById('sTotal').textContent=D.length;
+  document.getElementById('sVisited').textContent=visited.length;
+  document.getElementById('sPct').textContent=pct+'%';
+  document.getElementById('sGps').textContent=totalGps();
+  allContacts().then(c=>{document.getElementById('sContacts').textContent=c.length});
+}
+
+function renderRoutes(){
+  let el=document.getElementById('routesContainer');
+  if(!el){el=document.createElement('div');el.id='routesContainer';document.getElementById('tabHunt').appendChild(el)}
+  if(activeRegion!=='accra'){el.innerHTML='';return}
+  el.innerHTML='<div style="background:var(--card-bg);backdrop-filter:blur(12px);border:1px solid var(--card-border);border-radius:var(--radius);padding:12px;box-shadow:var(--card-shadow);margin-bottom:12px"><h2 style="font-size:13px;margin-bottom:3px">🗺️ Routes</h2><div style="display:flex;flex-direction:column;gap:4px">'+
+  ROUTES_ACCRA.map((r,i)=>{
+    const done=r.districts.filter(d=>visited.includes(d)).length;
+    const t=r.districts.length;
+    return `<div style="display:flex;align-items:center;gap:5px;padding:5px 6px;border-radius:6px;background:var(--input-bg);border:1px solid var(--input-border)">
+      <div style="width:20px;height:20px;border-radius:50%;background:var(--gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700">${i+1}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:10px">${r.name}</div><div style="font-size:8px;color:var(--text-secondary)">${r.note} · ${r.days}</div></div>
+      <div style="font-size:8px;color:var(--text-secondary)">${done}/${t} ${Math.round(done/t*100)}%</div></div>`;
+  }).join('')+'</div></div>';
+}
+
+function renderCalendar(){
+  const el=document.getElementById('calGrid');
+  const days={};
+  // Collect all check-ins by date
+  for(let k in allCheckins){
+    const did=k.replace(activeRegion+'_','');
+    const D=getDistricts();
+    const dist=D.find(d=>d.id===did);
+    if(!dist)continue;
+    allCheckins[k].forEach(c=>{
+      const d=new Date(c.ts).toLocaleDateString();
+      if(!days[d])days[d]=[];
+      days[d].push(dist.name);
+    });
+  }
+  const sorted=Object.keys(days).sort((a,b)=>new Date(b)-new Date(a));
+  el.innerHTML=sorted.slice(0,30).map(d=>{
+    return `<div class="cal-day"><div class="cd">${d}</div><div class="cdd">${days[d].map(n=>`<span>${n}</span>`).join('')}</div></div>`;
+  }).join('')||'<div style="font-size:10px;color:var(--text-secondary)">No visits yet</div>';
+}
+
+function renderReport(){
+  const D=getDistricts();
+  let body='';
+  D.forEach(d=>{
+    const v=visited.includes(d.id);
+    const notes=getNotes(d.id);
+    const am=allAudioMeta[key(d.id)]||[];
+    const ci=getCheckinCount(d.id);
+    body+=`<tr><td>${d.name}</td><td>${d.type}</td><td>${'★'.repeat(d.rating)}</td><td>${v?'✅':'❌'}</td><td>${ci>0?'📍'+ci:'—'}</td><td>${notes.length}</td><td>${am.length?'🎙️'+am.length:'—'}</td><td>—</td><td>—</td></tr>`;
+  });
+  document.getElementById('rptBody').innerHTML=body;
+  // Summary
+  let vc=0,gc=0,nc=0;
+  D.forEach(d=>{if(visited.includes(d.id))vc++;if(getCheckinCount(d.id)>0)gc++;nc+=getNotes(d.id).length});
+  allContacts().then(cc=>{
+    document.getElementById('rptSummary').innerHTML=`
+      <div class="rpt-card"><div class="rn">${D.length}</div><div class="rl">Districts</div></div>
+      <div class="rpt-card"><div class="rn">${vc}</div><div class="rl">Visited (${Math.round(vc/D.length*100)}%)</div></div>
+      <div class="rpt-card"><div class="rn">${gc}</div><div class="rl">With GPS</div></div>
+      <div class="rpt-card"><div class="rn">${nc}</div><div class="rl">Notes</div></div>
+      <div class="rpt-card"><div class="rn">${cc.length}</div><div class="rl">Contacts</div></div>`;
+  });
+}
+
+function exportReport(){
+  const D=getDistricts();const sp=getSalesperson();
+  let csv='Salesperson,District,Type,Rating,Visited,GPS Check-ins,Last GPS,Notes,Audio\n';
+  D.forEach(d=>{
+    const v=visited.includes(d.id);
+    const lc=getLastCheckin(d.id);
+    const notes=getNotes(d.id);
+    const am=allAudioMeta[key(d.id)]||[];
+    const ns=notes.map(n=>n.text.replace(/"/g,'""')).join('; ');
+    csv+=`"${sp||''}","${d.name}","${d.type}","${'★'.repeat(d.rating)}","${v?'Yes':'No'}","${getCheckinCount(d.id)}","${lc?new Date(lc.ts).toISOString():''}","${ns}","${am.length?'Yes':''}"\n`;
+  });
+  const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='MOOVED_Report_'+activeRegion+'_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  URL.revokeObjectURL(url);toast('📥 CSV exported');
+}
+
+function syncToCloud(){
+  // Export as JSON for manual cloud upload
+  const data={region:activeRegion,sp:getSalesperson(),ts:Date.now(),visited,checkins:allCheckins,notes:allNotes};
+  allContacts().then(cc=>{
+    data.contacts=cc;
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    toast('☁️ Data exported as JSON — upload to Google Drive/Dropbox manually');
+    const a2=document.createElement('a');a2.href=url;a2.download='MOOVED_Sync_'+new Date().toISOString().slice(0,10)+'.json';a2.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
+function resetAll(){
+  if(!confirm('Reset ALL data for '+REGIONS[activeRegion].name+'?'))return;
+  visited=[];setVisited([]);
+  Object.keys(allNotes).forEach(k=>{if(k.startsWith(activeRegion+'_'))delete allNotes[k]});
+  Object.keys(allCheckins).forEach(k=>{if(k.startsWith(activeRegion+'_'))delete allCheckins[k]});
+  Object.keys(allAudioMeta).forEach(k=>{if(k.startsWith(activeRegion+'_'))delete allAudioMeta[k]});
+  // Clear contacts for this region
+  allContacts().then(cc=>{
+    cc.filter(c=>c.region===activeRegion).forEach(c=>delContact(c.id));
+  });
+  saveNotes();saveCheckins();saveAudioMeta();render();toast('🔄 Reset complete');
+}
+
+async function deleteAudioNote(aid,did){
+  try{await delAudio(aid)}catch(e){}
+  if(allAudioMeta[key(did)]){
+    allAudioMeta[key(did)]=allAudioMeta[key(did)].filter(a=>a.id!==aid);
+    saveAudioMeta();
+  }
+  render();toast('🗑️ Deleted');
+}
+
+// ═══════ MAP ═══════
+let mapInit=false,mapObj=null;
+function initMap(){
+  if(mapInit||document.getElementById('tabMap').style.display==='none')return;
+  if(typeof L==='undefined'){
+    document.getElementById('mapContainer').innerHTML='<div style="padding:20px;text-align:center;color:var(--text-secondary);font-size:12px">Loading map...</div>';
+    const s=document.createElement('script');
+    s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    s.onload=()=>{const l=document.createElement('link');l.rel='stylesheet';l.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';document.head.appendChild(l);initMap()};
+    document.body.appendChild(s);return;
+  }
+  mapInit=true;
+  const D=getDistricts();
+  if(!D.length)return;
+  const container=document.getElementById('mapContainer');
+  if(!container)return;
+  if(mapObj)mapObj.remove();
+  const avgLat=D.reduce((s,d)=>s+d.lat,0)/D.length;
+  const avgLng=D.reduce((s,d)=>s+d.lng,0)/D.length;
+  mapObj=L.map(container).setView([avgLat,avgLng],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(mapObj);
+  const colors={'residential':'#6366f1','commercial':'#f59e0b','solar-market':'#10b981','hardware':'#ec4899','industrial':'#8b5cf6','mixed':'#6b7280'};
+  D.forEach(d=>{
+    const v=visited.includes(d.id);
+    const s=d.rating*8;
+    L.circleMarker([d.lat,d.lng],{
+      radius:s,color:colors[d.type]||'#888',fillColor:colors[d.type]||'#888',
+      fillOpacity:v?.7:.4,weight:v?3:1
+    }).addTo(mapObj).bindTooltip(d.name+(v?'✅':''),{direction:'top'}).bindPopup(`
+      <b>${d.name}</b><br>${'★'.repeat(d.rating)}<br>${d.type}<br>${visited.includes(d.id)?'✅ Visited':'⭕ Not visited'}<br>
+      <span style="font-size:10px">${d.desc}</span>
+    `);
+  });
+  setTimeout(()=>mapObj.invalidateSize(),300);
+}
+
+// ═══════ REGIONS ═══════
+function switchRegion(r){
+  activeRegion=r;localStorage.setItem('avm_region',r);
+  visited=getVisited();expanded={};mapInit=false;
+  document.querySelectorAll('.rbn').forEach(b=>b.classList.toggle('active',b.dataset.r===r));
+  render();toast('🗺️ '+REGIONS[r].name);
+}
+function renderRegions(){
+  const bar=document.getElementById('regionBar');
+  bar.innerHTML=REGION_KEYS.map(r=>`<span class="rbn${activeRegion===r?' active':''}" data-r="${r}" onclick="switchRegion('${r}')">${r==='accra'?'📍':r==='kumasi'?'🏛️':'🌊'} ${REGIONS[r].name} <span class="pop">${REGIONS[r].data.length}</span></span>`).join('');
+}
+
+// ═══════ UI ═══════
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('active',b.dataset.t===t));localStorage.setItem('avm_t4',t)}
+function setFilter(f,el){filter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c.dataset.f===f));render()}
+function switchTab(t,el){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.tc').forEach(c=>c.classList.remove('active'));document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');if(t==='map')initMap()}
+
+let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2000)}
+
+// ═══════ SYNC CONFIG & ENGINE ═══════
+function getSyncConfig(){return JSON.parse(localStorage.getItem('avm_sync')||'{"url":"","auto":true,"interval":0,"lastSync":0}')}
+function saveSyncConfig(){
+  const cfg=getSyncConfig();
+  cfg.url=document.getElementById('gsUrl').value.trim();
+  cfg.interval=parseInt(document.getElementById('syncInterval').value)||0;
+  localStorage.setItem('avm_sync',JSON.stringify(cfg));
+  updateSyncUI();
+  resetSyncTimer();
+}
+function toggleAutoSync(){
+  const cfg=getSyncConfig();cfg.auto=!cfg.auto;
+  localStorage.setItem('avm_sync',JSON.stringify(cfg));
+  updateSyncUI();resetSyncTimer();
+  toast(cfg.auto?'✅ Auto sync ON':'⏸️ Auto sync OFF');
+}
+function updateSyncUI(){
+  const cfg=getSyncConfig();
+  document.getElementById('gsUrl').value=cfg.url||'';
+  document.getElementById('syncInterval').value=cfg.interval||0;
+  const t=document.getElementById('autoSyncToggle');
+  t.classList.toggle('on',!!cfg.auto);
+  const dot=document.querySelector('#sSync .sync-dot');
+  const label=document.getElementById('sSyncLabel');
+  if(!cfg.url){dot.className='sync-dot off';label.textContent='No URL'}
+  else if(cfg.lastSync>0){dot.className='sync-dot on';label.textContent='Synced'}
+  else{dot.className='sync-dot off';label.textContent='Never synced'}
+  document.getElementById('lastSyncTime').textContent=cfg.lastSync?new Date(cfg.lastSync).toLocaleString():'Never';
+}
+function setSyncStatus(mode){
+  const dot=document.querySelector('#sSync .sync-dot');
+  const label=document.getElementById('sSyncLabel');
+  dot.className='sync-dot '+mode;
+  if(mode==='syncing')label.textContent='Syncing...';
+  else if(mode==='on')label.textContent='Synced';
+  else if(mode==='err')label.textContent='Error';
+  else label.textContent='Offline';
+}
+
+async function syncNow(){
+  const cfg=getSyncConfig();
+  if(!cfg.url){toast('❌ Set Google Sheets URL first');return}
+  const sp=getSalesperson();
+  const data={sp,timestamp:new Date().toISOString(),region:activeRegion,visits:{},notes:{},gps:{}};
+  const D=getDistricts();
+  D.forEach(d=>{
+    data.visits[d.name]=visited.includes(d.id)?'Yes':'No';
+    const g=getCheckins(d.id);
+    if(g.length)data.gps[d.name]=g;
+    const n=getNotes(d.id);
+    if(n.length)data.notes[d.name]=n;
+  });
+  try{
+    setSyncStatus('syncing');
+    const r=await fetch(cfg.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data)});
+    cfg.lastSync=Date.now();localStorage.setItem('avm_sync',JSON.stringify(cfg));
+    setSyncStatus('on');updateSyncUI();
+    toast('✅ Data synced to cloud');
+  }catch(e){
+    setSyncStatus('err');toast('❌ Sync failed: '+e.message);
+  }
+}
+
+async function testSync(){
+  const cfg=getSyncConfig();
+  if(!cfg.url){toast('❌ Set URL first');return}
+  try{
+    setSyncStatus('syncing');
+    const r=await fetch(cfg.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({test:true,ts:Date.now()})});
+    setSyncStatus('on');toast('✅ Connection OK — URL is valid');
+  }catch(e){
+    setSyncStatus('err');toast('❌ Connection failed');
+  }
+}
+
+let syncTimer=null;
+function resetSyncTimer(){
+  if(syncTimer){clearInterval(syncTimer);syncTimer=null}
+  const cfg=getSyncConfig();
+  if(cfg.interval>0&&cfg.url){
+    syncTimer=setInterval(()=>{
+      if(navigator.onLine!==false)syncNow();
+    },cfg.interval*60000);
+  }
+}
+
+// Trigger sync on data changes (auto mode)
+function autoSyncTrigger(){
+  const cfg=getSyncConfig();
+  if(cfg.auto&&cfg.url&&navigator.onLine!==false)syncNow();
+}
+
+// Patch key functions to auto-sync
+const _origToggleVisit=toggleVisit;
+toggleVisit=function(id){_origToggleVisit(id);autoSyncTrigger()};
+const _origSaveNote=saveNote;
+saveNote=function(id){_origSaveNote(id);autoSyncTrigger()};
+const _origDoCheckin=doCheckin;
+doCheckin=function(id){_origDoCheckin(id);autoSyncTrigger()};
+
+// ═══════ PWA INSTALL ═══════
+let pwaDeferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();pwaDeferredPrompt=e;
+  const btn=document.getElementById('pwaInstallBtn');
+  if(btn){btn.style.display='inline-block';btn.onclick=installPWA}
+  document.getElementById('pwaStatus').textContent='✅ Installable — tap the button above';
+});
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('pwaStatus').textContent='✅ Installed! Open from your home screen';
+  document.getElementById('pwaInstallBtn').style.display='none';
+});
+function installPWA(){
+  if(!pwaDeferredPrompt)return;
+  pwaDeferredPrompt.prompt();
+  pwaDeferredPrompt.userChoice.then(()=>{pwaDeferredPrompt=null;document.getElementById('pwaInstallBtn').style.display='none'});
+}
+function checkPWA(){
+  if(window.matchMedia('(display-mode: standalone)').matches){
+    document.getElementById('pwaStatus').textContent='✅ Running as installed app';
+    document.getElementById('pwaInstallBtn').style.display='none';
+  }else{
+    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+    if(isIOS)document.getElementById('pwaStatus').textContent='📱 On iPhone/iPad: tap Share → Add to Home Screen';
+    else document.getElementById('pwaStatus').textContent='📱 On Android: Chrome will show "Add to Home Screen" prompt';
+  }
+}
+
+// Google Sheets Setup Guide
+function renderGSSetupGuide(){
+  const guide=`<b>Step 1:</b> Create a Google Sheet at sheets.new<br>
+<b>Step 2:</b> Go to Extensions → Apps Script<br>
+<b>Step 3:</b> Delete all code, paste the script below<br>
+<b>Step 4:</b> Deploy → New Deployment → Web App<br>
+<b>Step 5:</b> Set "Execute as: Me", "Who has access: Anyone"<br>
+<b>Step 6:</b> Copy the web app URL → paste above<br>
+<b>Step 7:</b> Click "Test Connection" to verify<br><br>
+<small style="color:var(--text-secondary)">This script handles both: POST (from salesperson app) and GET (from dashboard).</small><br><br>
+📋 <b>Google Apps Script Code (copy all):</b><br>
+<textarea style="width:100%;height:240px;font-size:9px;font-family:monospace;padding:6px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);resize:vertical" readonly>
+// POST: Salesperson app pushes data here
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+  // If first row, add headers
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(['Timestamp','Salesperson','Region','Visits','GPS','Notes']);
+  }
+  sheet.appendRow([
+    data.timestamp || new Date().toISOString(),
+    data.sp || '',
+    data.region || '',
+    JSON.stringify(data.visits),
+    JSON.stringify(data.gps),
+    JSON.stringify(data.notes)
+  ]);
+  return ContentService.createTextOutput('OK');
+}
+
+// GET: Dashboard reads data from here
+function doGet() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var range = sheet.getDataRange();
+  var values = range.getValues();
+  if (values.length < 2) {
+    return ContentService.createTextOutput('[]').setMimeType(ContentService.MimeType.JSON);
+  }
+  var headers = values.shift();
+  var result = values.map(function(row) {
+    var obj = { id: Utilities.getUuid() };
+    headers.forEach(function(h, i) { obj[h] = row[i] || ''; });
+    return obj;
+  });
+  return ContentService.createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}</textarea><br>
+<button class="btn-sm" style="border-color:var(--accent);color:var(--accent);margin-top:4px" onclick="copyScript()">📋 Copy Script</button>`;
+  document.getElementById('gsSetupGuide').innerHTML=guide;
+}
+function copyScript(){
+  const code='function doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var data = JSON.parse(e.postData.contents);\n  if (sheet.getLastRow() === 0) {\n    sheet.appendRow(["Timestamp","Salesperson","Region","Visits","GPS","Notes"]);\n  }\n  sheet.appendRow([\n    data.timestamp || new Date().toISOString(),\n    data.sp || "",\n    data.region || "",\n    JSON.stringify(data.visits),\n    JSON.stringify(data.gps),\n    JSON.stringify(data.notes)\n  ]);\n  return ContentService.createTextOutput("OK");\n}\n\nfunction doGet() {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var values = sheet.getDataRange().getValues();\n  if (values.length < 2) return ContentService.createTextOutput("[]");\n  var headers = values.shift();\n  var result = values.map(function(row) {\n    var obj = {};\n    headers.forEach(function(h, i) { obj[h] = row[i] || ""; });\n    return obj;\n  });\n  return ContentService.createTextOutput(JSON.stringify(result))\n    .setMimeType(ContentService.MimeType.JSON);\n}';
+  navigator.clipboard.writeText(code).then(()=>toast('📋 Script copied!')).catch(()=>toast('Copy manually — select the text'));
+}
+
+// ═══════ INIT ═══════
+const st=localStorage.getItem('avm_t4')||'light';setTheme(st);
+document.getElementById('salespersonInput').value=getSalesperson();
+openDB().then(()=>{render();renderRegions();updateSyncUI();resetSyncTimer();checkPWA();renderGSSetupGuide()}).catch(e=>{console.warn('DB:',e.message);render();renderRegions();updateSyncUI();resetSyncTimer();checkPWA();renderGSSetupGuide()});
+</script>
+</body>
+</html>

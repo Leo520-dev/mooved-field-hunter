@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOOVED Field Dashboard — Manager View</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f0f4f8;--card:rgba(255,255,255,0.85);--card-border:rgba(255,255,255,0.5);--shadow:0 4px 24px rgba(0,0,0,.06);--text:#1a2332;--text2:#5b6b7e;--accent:#6366f1;--accent2:#8b5cf6;--accent3:#06b6d4;--grad:linear-gradient(135deg,#6366f1,#8b5cf6,#06b6d4);--green:#10b981;--orange:#f59e0b;--red:#ef4444;--input:#fff;--input-border:#d1d9e6;--radius:14px;--rs:8px;--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);padding:20px;min-height:100vh}
+.dash{max-width:1400px;margin:0 auto}
+h1{font-size:24px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.sub{font-size:13px;color:var(--text2);margin-bottom:16px}
+
+/* URL bar */
+.url-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.url-bar input{flex:1;min-width:200px;padding:10px 14px;border-radius:var(--rs);border:2px solid var(--input-border);background:var(--input);color:var(--text);font-size:14px;font-family:var(--font)}
+.url-bar input:focus{outline:none;border-color:var(--accent)}
+.url-bar button{padding:10px 20px;border-radius:var(--rs);border:none;background:var(--grad);color:#fff;font-weight:600;cursor:pointer;font-size:13px;font-family:var(--font)}
+.url-bar button:active{opacity:.8}
+.url-bar .status{font-size:12px;color:var(--text2);padding:10px 0;white-space:nowrap}
+
+/* KPI row */
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.kpi-card{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--card-border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);text-align:center}
+.kpi-card .num{font-size:28px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.kpi-card .lbl{font-size:11px;color:var(--text2);margin-top:2px}
+.kpi-card .sub-num{font-size:13px;color:var(--text2);margin-top:4px}
+
+/* Per-salesperson cards */
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:12px;margin-bottom:16px}
+.sp-card{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--card-border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.sp-card h3{font-size:16px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sp-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid var(--card-border)}
+.sp-row:last-child{border:none}
+.sp-row .l{color:var(--text2)}
+.sp-row .v{font-weight:600}
+.bar{height:6px;border-radius:3px;background:#e5e7eb;margin:4px 0;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;background:var(--grad);transition:width .5s ease}
+
+/* Activity timeline */
+.timeline{margin-bottom:16px}
+.tl-card{background:var(--card);backdrop-filter:blur(12px);border:1px solid var(--card-border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.tl-card h2{font-size:15px;margin-bottom:8px}
+.tl-item{display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--card-border);font-size:12px}
+.tl-item:last-child{border:none}
+.tl-time{color:var(--text2);white-space:nowrap;min-width:70px}
+.tl-sp{font-weight:600;color:var(--accent);min-width:60px}
+.tl-action{color:var(--text);flex:1}
+.tl-region{color:var(--text2);font-size:11px}
+
+/* Map */
+#map{height:400px;border-radius:var(--radius);margin-bottom:16px;background:var(--card)}
+#map .leaflet-container{border-radius:var(--radius)}
+
+/* Raw data */
+.raw-toggle{cursor:pointer;font-size:12px;color:var(--accent);padding:8px;text-align:center}
+.raw-data{display:none;background:var(--card);border:1px solid var(--card-border);border-radius:var(--rs);padding:12px;font-size:11px;font-family:monospace;white-space:pre-wrap;max-height:300px;overflow:auto;margin-top:4px}
+
+/* Auto-refresh */
+.auto-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.auto-bar .lbl{font-size:12px;color:var(--text2)}
+.auto-bar select{padding:6px 10px;border-radius:6px;border:1px solid var(--input-border);font-size:12px;font-family:var(--font);background:var(--input);color:var(--text)}
+
+/* Error state */
+.error-state{padding:40px;text-align:center;color:var(--red);font-size:14px}
+.error-state .big{font-size:40px;margin-bottom:8px}
+
+@media(max-width:600px){.sp-grid{grid-template-columns:1fr}.kpi{grid-template-columns:repeat(2,1fr)}#map{height:250px}}
+</style>
+</head>
+<body>
+<div class="dash">
+<h1>📊 MOOVED Field Command Center</h1>
+<p class="sub">Real-time sales team tracking dashboard — data from Google Sheets</p>
+
+<div class="url-bar">
+<input id="gsUrl" placeholder="Paste your Google Apps Script Web App URL here..." value="">
+<button onclick="loadData()">🔄 Load Data</button>
+<span class="status" id="statusMsg">Enter URL and click Load</span>
+</div>
+
+<div class="auto-bar">
+<span class="lbl">🔄 Auto-refresh:</span>
+<select id="refreshInterval" onchange="setAutoRefresh()">
+<option value="0">Off</option>
+<option value="10">Every 10 sec</option>
+<option value="30">Every 30 sec</option>
+<option value="60" selected>Every 1 min</option>
+<option value="300">Every 5 min</option>
+</select>
+<span class="lbl" id="lastRefresh" style="margin-left:8px"></span>
+<button style="margin-left:auto;padding:6px 14px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;font-size:11px;font-family:var(--font)" onclick="localStorage.removeItem('dash_url');document.getElementById('gsUrl').value='';document.getElementById('statusMsg').textContent='URL cleared'">Clear URL</button>
+</div>
+
+<div class="kpi" id="kpiRow"></div>
+
+<div id="map"></div>
+
+<div class="sp-grid" id="spGrid"></div>
+
+<div class="timeline"><div class="tl-card"><h2>📋 Recent Activity</h2><div id="timeline"></div></div></div>
+
+<div class="raw-toggle" onclick="toggleRaw()">📄 Show raw data ▼</div>
+<div class="raw-data" id="rawData"></div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ═══════ STATE ═══════
+let allData=[];
+let mapObj=null;
+let refreshTimer=null;
+const ACCRA_COORDS={lat:5.6037,lng:-0.1870};
+
+// ═══════ INIT ═══════
+const savedUrl=localStorage.getItem('dash_url')||'';
+document.getElementById('gsUrl').value=savedUrl;
+if(savedUrl)loadData();
+
+// ═══════ LOAD ═══════
+async function loadData(){
+  const url=document.getElementById('gsUrl').value.trim();
+  if(!url){document.getElementById('statusMsg').textContent='⚠️ Enter the Google Apps Script URL';return}
+  localStorage.setItem('dash_url',url);
+  const status=document.getElementById('statusMsg');
+  status.textContent='⏳ Loading...';
+  try{
+    const r=await fetch(url);
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const txt=await r.text();
+    allData=JSON.parse(txt);
+    if(!Array.isArray(allData))throw new Error('Not an array');
+    render();
+    status.textContent='✅ '+allData.length+' records loaded · '+new Date().toLocaleTimeString();
+  }catch(e){
+    status.textContent='❌ Failed: '+e.message;
+    document.getElementById('kpiRow').innerHTML='<div class="error-state"><div class="big">⚠️</div>Cannot load data. Check:<br>1. URL is correct<br>2. Script is deployed as Web App<br>3. "Anyone" has access<br><br><b>Error:</b> '+e.message+'</div>';
+  }
+}
+
+// ═══════ RENDER ═══════
+function render(){
+  if(!allData.length){renderEmpty();return}
+  const records=allData;
+  
+  // Parse data
+  const spData={}; // { name: { visits: {...}, gps: {...}, notes: {...}, regions: Set, count: N } }
+  let totalVisits=0,totalGps=0;
+  
+  records.forEach(r=>{
+    const sp=r.Salesperson||'Unknown';
+    if(!spData[sp])spData[sp]={visitsByRegion:{},gpsCount:0,noteCount:0,regions:new Set(),records:[],lastActive:0};
+    spData[sp].records.push(r);
+    spData[sp].regions.add(r.Region||'unknown');
+    const ts=new Date(r.Timestamp).getTime();
+    if(ts>spData[sp].lastActive)spData[sp].lastActive=ts;
+    
+    // Parse visits
+    try{const v=JSON.parse(r.Visits||'{}');Object.keys(v).forEach(k=>{if(v[k]==='Yes')totalVisits++});spData[sp]._visits=v}catch(e){}
+    // Parse GPS
+    try{const g=JSON.parse(r.GPS||'{}');Object.keys(g).forEach(k=>{if(g[k].length)gpsCount++;spData[sp].gpsCount+=g[k].length})}catch(e){}
+    // Parse notes
+    try{const n=JSON.parse(r.Notes||'{}');Object.keys(n).forEach(k=>{spData[sp].noteCount+=n[k].length})}catch(e){}
+  });
+
+  // KPI row
+  const spCount=Object.keys(spData).length;
+  document.getElementById('kpiRow').innerHTML=`
+    <div class="kpi-card"><div class="num">${records.length}</div><div class="lbl">Total Sync Records</div></div>
+    <div class="kpi-card"><div class="num">${spCount}</div><div class="lbl">Active Salespeople</div></div>
+    <div class="kpi-card"><div class="num">${totalVisits}</div><div class="lbl">District Visits</div></div>
+    <div class="kpi-card"><div class="num">${totalGps}</div><div class="lbl">GPS Check-ins</div></div>
+    <div class="kpi-card"><div class="num" id="todayVisits">0</div><div class="lbl">Today's Visits</div></div>
+  `;
+  // Today's visits
+  const today=new Date().toDateString();
+  const todayVisits=records.filter(r=>new Date(r.Timestamp).toDateString()===today).length;
+  document.getElementById('todayVisits').textContent=todayVisits;
+
+  // Per-salesperson cards
+  const totalDistricts=22; // Accra default
+  document.getElementById('spGrid').innerHTML=Object.keys(spData).sort().map(sp=>{
+    const d=spData[sp];
+    const lastActive=d.lastActive?new Date(d.lastActive).toLocaleString():'Never';
+    const minutesAgo=Math.round((Date.now()-d.lastActive)/60000);
+    const status=minutesAgo<5?'🟢 Online':minutesAgo<60?'🟡 '+minutesAgo+'m ago':'🔴 '+Math.round(minutesAgo/60)+'h ago';
+    const visitedCount=Object.values(d._visits||{}).filter(v=>v==='Yes').length;
+    const pct=Math.round(visitedCount/totalDistricts*100);
+    const regions=[...d.regions].join(', ');
+    return `<div class="sp-card">
+      <h3>👤 ${sp} <span style="font-size:11px;font-weight:400;color:var(--text2)">${status}</span></h3>
+      <div class="sp-row"><span class="l">Visited districts</span><span class="v">${visitedCount}/${totalDistricts} (${pct}%)</span></div>
+      <div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <div class="sp-row"><span class="l">GPS check-ins</span><span class="v">${d.gpsCount}</span></div>
+      <div class="sp-row"><span class="l">Notes recorded</span><span class="v">${d.noteCount}</span></div>
+      <div class="sp-row"><span class="l">Data syncs</span><span class="v">${d.records.length}</span></div>
+      <div class="sp-row"><span class="l">Regions</span><span class="v">${regions||'Accra'}</span></div>
+      <div class="sp-row"><span class="l">Last active</span><span class="v">${lastActive}</span></div>
+    </div>`;
+  }).join('');
+
+  // Timeline
+  const timeline=records.slice(-50).reverse();
+  document.getElementById('timeline').innerHTML=timeline.map(r=>{
+    const ts=new Date(r.Timestamp);
+    const sp=r.Salesperson||'—';
+    let action='📤 Data synced';
+    // Try to extract meaningful action from notes
+    try{
+      const notes=JSON.parse(r.Notes||'{}');
+      const firstNote=Object.values(notes).flat()[0];
+      if(firstNote)action='📝 "'+firstNote.text.slice(0,40)+'"';
+    }catch(e){}
+    return `<div class="tl-item">
+      <span class="tl-time">${ts.toLocaleDateString()}<br>${ts.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span>
+      <span class="tl-sp">${sp}</span>
+      <span class="tl-action">${action}</span>
+      <span class="tl-region">${r.Region||''}</span>
+    </div>`;
+  }).join('')||'<div style="font-size:12px;color:var(--text2);padding:8px">No activity yet</div>';
+
+  // Map
+  renderMap();
+
+  // Raw data
+  document.getElementById('rawData').textContent=JSON.stringify(records,null,2);
+}
+
+function renderEmpty(){
+  document.getElementById('kpiRow').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text2)">📭 No data yet. Salespeople need to sync data first.</div>';
+  document.getElementById('spGrid').innerHTML='';
+  document.getElementById('timeline').innerHTML='<div style="font-size:12px;color:var(--text2);padding:8px">Waiting for data...</div>';
+}
+
+// ═══════ MAP ═══════
+function renderMap(){
+  if(!allData.length)return;
+  if(mapObj){mapObj.remove();mapObj=null}
+  const container=document.getElementById('map');
+  if(!container)return;
+  mapObj=L.map(container).setView([ACCRA_COORDS.lat,ACCRA_COORDS.lng],11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'©OSM',maxZoom:18}).addTo(mapObj);
+  
+  // Collect GPS points
+  const points=[];
+  allData.forEach(r=>{
+    try{
+      const gps=JSON.parse(r.GPS||'{}');
+      const sp=r.Salesperson||'?';
+      Object.keys(gps).forEach(dist=>{
+        (gps[dist]||[]).forEach(g=>{
+          if(g.lat&&g.lng)points.push({lat:g.lat,lng:g.lng,sp,district:dist,ts:new Date(g.ts).toLocaleString()});
+        });
+      });
+    }catch(e){}
+  });
+  
+  const colors={};const palette=['#6366f1','#10b981','#f59e0b','#ef4444','#ec4899','#06b6d4'];
+  let ci=0;
+  points.forEach(p=>{if(!colors[p.sp]){colors[p.sp]=palette[ci%palette.length];ci++}});
+  
+  points.forEach(p=>{
+    L.circleMarker([p.lat,p.lng],{
+      radius:6,color:colors[p.sp]||'#888',fillColor:colors[p.sp]||'#888',
+      fillOpacity:.6,weight:2
+    }).addTo(mapObj).bindTooltip(p.sp+': '+p.district,{direction:'top'})
+    .bindPopup('<b>'+p.sp+'</b><br>'+p.district+'<br>'+p.ts);
+  });
+  
+  setTimeout(()=>mapObj.invalidateSize(),500);
+}
+
+// ═══════ AUTO REFRESH ═══════
+function setAutoRefresh(){
+  if(refreshTimer){clearInterval(refreshTimer);refreshTimer=null}
+  const sec=parseInt(document.getElementById('refreshInterval').value);
+  if(sec>0){
+    refreshTimer=setInterval(()=>{loadData()},sec*1000);
+    document.getElementById('lastRefresh').textContent='Auto-refresh: every '+sec+'s';
+  }else{
+    document.getElementById('lastRefresh').textContent='Auto-refresh: off';
+  }
+}
+
+function toggleRaw(){
+  const el=document.getElementById('rawData');
+  el.style.display=el.style.display==='block'?'none':'block';
+}
+
+// Auto-refresh on load
+setAutoRefresh();
+</script>
+</body>
+</html>
