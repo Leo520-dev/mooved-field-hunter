@@ -786,7 +786,7 @@ async function syncNow(){
   const cfg=getSyncConfig();
   if(!cfg.url){toast('❌ Set Google Sheets URL first');return}
   const sp=getSalesperson();
-  const data={sp,timestamp:new Date().toISOString(),region:activeRegion,visits:{},notes:{},gps:{}};
+  const data={sp,timestamp:new Date().toISOString(),region:activeRegion,visits:{},notes:{},gps:{},contacts:{},photoCount:{}};
   const D=getDistricts();
   D.forEach(d=>{
     data.visits[d.name]=visited.includes(d.id)?'Yes':'No';
@@ -795,6 +795,21 @@ async function syncNow(){
     const n=getNotes(d.id);
     if(n.length)data.notes[d.name]=n;
   });
+  // Fetch contacts + photos (async)
+  const cc=await allContacts().catch(()=>[]);
+  cc.filter(c=>c.region===activeRegion).forEach(c=>{
+    if(!data.contacts[c.district])data.contacts[c.district]=[];
+    data.contacts[c.district].push({name:c.name,phone:c.phone,interest:c.interest,ts:c.ts});
+  });
+  // Photo counts (we only sync count, not the actual images)
+  try{
+    const pr=dbRead('photos');
+    const allPhotos=await new Promise(res=>{const items=[];const r=pr.openCursor();r.onsuccess=e=>{const c=e.target.result;if(c){items.push(c.value);c.continue()}else res(items)};r.onerror=()=>res([])});
+    D.forEach(d=>{
+      const count=allPhotos.filter(p=>p.id.startsWith(key(d))).length;
+      if(count)data.photoCount[d.name]=count;
+    });
+  }catch(e){}
   try{
     setSyncStatus('syncing');
     const r=await fetch(cfg.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data)});
@@ -831,8 +846,10 @@ function resetSyncTimer(){
 
 // Trigger sync on data changes (auto mode)
 function autoSyncTrigger(){
-  const cfg=getSyncConfig();
-  if(cfg.auto&&cfg.url&&navigator.onLine!==false)syncNow();
+  try{
+    const cfg=getSyncConfig();
+    if(cfg.auto&&cfg.url&&navigator.onLine!==false)syncNow();
+  }catch(e){}
 }
 
 // Patch key functions to auto-sync
@@ -882,24 +899,25 @@ function renderGSSetupGuide(){
 <b>Step 7:</b> Click "Test Connection" to verify<br><br>
 <small style="color:var(--text-secondary)">This script handles both: POST (from salesperson app) and GET (from dashboard).</small><br><br>
 📋 <b>Google Apps Script Code (copy all):</b><br>
-<textarea style="width:100%;height:240px;font-size:9px;font-family:monospace;padding:6px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);resize:vertical" readonly>
+<textarea style="width:100%;height:250px;font-size:9px;font-family:monospace;padding:6px;border-radius:5px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text);resize:vertical" readonly>
 // POST: Salesperson app pushes data here
 function doPost(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = JSON.parse(e.postData.contents);
-  // If first row, add headers
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(['Timestamp','Salesperson','Region','Visits','GPS','Notes']);
+    sheet.appendRow(["Timestamp","Salesperson","Region","Visits","GPS","Notes","Contacts","Photo Count"]);
   }
   sheet.appendRow([
     data.timestamp || new Date().toISOString(),
-    data.sp || '',
-    data.region || '',
+    data.sp || "",
+    data.region || "",
     JSON.stringify(data.visits),
     JSON.stringify(data.gps),
-    JSON.stringify(data.notes)
+    JSON.stringify(data.notes),
+    JSON.stringify(data.contacts || {}),
+    JSON.stringify(data.photoCount || {})
   ]);
-  return ContentService.createTextOutput('OK');
+  return ContentService.createTextOutput("OK");
 }
 
 // GET: Dashboard reads data from here
@@ -923,7 +941,7 @@ function doGet() {
   document.getElementById('gsSetupGuide').innerHTML=guide;
 }
 function copyScript(){
-  const code='function doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var data = JSON.parse(e.postData.contents);\n  if (sheet.getLastRow() === 0) {\n    sheet.appendRow(["Timestamp","Salesperson","Region","Visits","GPS","Notes"]);\n  }\n  sheet.appendRow([\n    data.timestamp || new Date().toISOString(),\n    data.sp || "",\n    data.region || "",\n    JSON.stringify(data.visits),\n    JSON.stringify(data.gps),\n    JSON.stringify(data.notes)\n  ]);\n  return ContentService.createTextOutput("OK");\n}\n\nfunction doGet() {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var values = sheet.getDataRange().getValues();\n  if (values.length < 2) return ContentService.createTextOutput("[]");\n  var headers = values.shift();\n  var result = values.map(function(row) {\n    var obj = {};\n    headers.forEach(function(h, i) { obj[h] = row[i] || ""; });\n    return obj;\n  });\n  return ContentService.createTextOutput(JSON.stringify(result))\n    .setMimeType(ContentService.MimeType.JSON);\n}';
+  const code='function doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var data = JSON.parse(e.postData.contents);\n  if (sheet.getLastRow() === 0) {\n    sheet.appendRow(["Timestamp","Salesperson","Region","Visits","GPS","Notes","Contacts","Photo Count"]);\n  }\n  sheet.appendRow([\n    data.timestamp || new Date().toISOString(),\n    data.sp || "",\n    data.region || "",\n    JSON.stringify(data.visits),\n    JSON.stringify(data.gps),\n    JSON.stringify(data.notes),\n    JSON.stringify(data.contacts || {}),\n    JSON.stringify(data.photoCount || {})\n  ]);\n  return ContentService.createTextOutput("OK");\n}\n\nfunction doGet() {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var values = sheet.getDataRange().getValues();\n  if (values.length < 2) return ContentService.createTextOutput("[]");\n  var headers = values.shift();\n  var result = values.map(function(row) {\n    var obj = {};\n    headers.forEach(function(h, i) { obj[h] = row[i] || ""; });\n    return obj;\n  });\n  return ContentService.createTextOutput(JSON.stringify(result))\n    .setMimeType(ContentService.MimeType.JSON);\n}';
   navigator.clipboard.writeText(code).then(()=>toast('📋 Script copied!')).catch(()=>toast('Copy manually — select the text'));
 }
 
