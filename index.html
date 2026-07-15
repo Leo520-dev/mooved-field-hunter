@@ -207,6 +207,7 @@ body.mobile #mapContainer{height:280px}
 <span class="tab-btn" data-tab="map" onclick="switchTab('map',this);initMap()">🗺️ Map</span>
 <span class="tab-btn" data-tab="cal" onclick="switchTab('cal',this)">📅 Calendar</span>
 <span class="tab-btn" data-tab="settings" onclick="switchTab('settings',this)">⚙️ Settings</span>
+<span class="tab-btn" data-tab="roi" onclick="switchTab('roi',this)">💰 ROI</span>
 <span class="tab-btn" data-tab="report" onclick="switchTab('report',this)">📊 Report</span>
 </div>
 
@@ -280,6 +281,13 @@ This data is used solely for work coordination and performance tracking.<br>
 Under Ghana Data Protection Act (Act 843), your data is collected with consent for legitimate business purposes.<br>
 If you do not consent, do not use this app.
 </div>
+</div>
+
+<!-- ROI Tab -->
+<div class="tc" id="tabRoi">
+  <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:8px">💰 ROI Calculator</div>
+  <p style="font-size:10px;color:var(--text-secondary);margin-bottom:6px">Show your customers how much they can save with solar power! Adjust the sliders below to match their situation.</p>
+  <iframe src="roi.html" style="width:100%;height:calc(100vh - 220px);border:none;border-radius:10px;background:var(--card-bg)"></iframe>
 </div>
 
 <div class="tc" id="tabReport"><div class="rpt-summary" id="rptSummary"></div><button class="rpt-export" onclick="exportReport()">📥 Export CSV</button><button class="rpt-export" onclick="syncToCloud()" style="border-color:var(--success);color:var(--success);margin-left:4px">☁️ Sync to Cloud</button><div style="overflow-x:auto;margin-top:4px"><table class="rpt-table"><thead><tr><th>District</th><th>Type</th><th>★</th><th>Visited</th><th>GPS</th><th>Notes</th><th>Audio</th><th>Photos</th><th>Contacts</th></tr></thead><tbody id="rptBody"></tbody></table></div></div>
