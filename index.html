@@ -427,12 +427,49 @@ async function takePhoto(id){
   input.onchange=async e=>{
     const f=e.target.files[0];if(!f)return;
     try{
-      const blob=f;const pid=key(id)+'_'+Date.now();
+      // Compress to max 300px wide
+      const thumbData=await compressImage(f,300);
+      const pid=key(id)+'_'+Date.now();
+      // Save compressed thumb as blob + base64 for sync
+      const blob=dataURLtoBlob(thumbData);
       await savePhoto(pid,blob,'');
-      toast('📸 Photo saved');render();
+      // Save base64 to localStorage for cloud sync
+      storePhotoForSync(key(id),thumbData);
+      toast('📸 Photo saved & ready for sync');render();
     }catch(ex){toast('Photo save failed')}
   };
   input.click();
+}
+function compressImage(file,maxW){
+  return new Promise((res,rej)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      const ratio=Math.min(1,maxW/img.width);
+      c.width=img.width*ratio;c.height=img.height*ratio;
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      res(c.toDataURL('image/jpeg',0.6));
+    };
+    img.onerror=rej;
+    img.src=URL.createObjectURL(file);
+  });
+}
+function dataURLtoBlob(dataurl){
+  const parts=dataurl.split(','),mime=parts[0].match(/:(.*?);/)[1];
+  const bytes=atob(parts[1]),arr=new Uint8Array(bytes.length);
+  for(let i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i);
+  return new Blob([arr],{type:mime});
+}
+function storePhotoForSync(k,dataUrl){
+  let pm=JSON.parse(localStorage.getItem('avm_photos_sync')||'{}');
+  if(!pm[k])pm[k]=[];pm[k].push(dataUrl);
+  // Keep max 20 photos per district
+  if(pm[k].length>20)pm[k]=pm[k].slice(-20);
+  localStorage.setItem('avm_photos_sync',JSON.stringify(pm));
+}
+function getPhotosForSync(k){
+  const pm=JSON.parse(localStorage.getItem('avm_photos_sync')||'{}');
+  return pm[k]||[];
 }
 let photoViewData=null;
 function viewPhoto(id){const el=document.getElementById('photoModalImg');const modal=document.getElementById('photoModal');photoViewData=id;modal.classList.add('open')}
@@ -791,7 +828,7 @@ async function syncNow(){
   // Save URL if it was using default
   if(!cfg.url){cfg.url=defUrl;localStorage.setItem('avm_sync',JSON.stringify(cfg));updateSyncUI()}
   const sp=getSalesperson();
-  const data={sp,timestamp:new Date().toISOString(),region:activeRegion,visits:{},notes:{},gps:{},contacts:{},photoCount:{}};
+  const data={sp,timestamp:new Date().toISOString(),region:activeRegion,visits:{},notes:{},gps:{},contacts:{},photoCount:{},photos:{}};
   const D=getDistricts();
   D.forEach(d=>{
     data.visits[d.name]=visited.includes(d.id)?'Yes':'No';
@@ -815,6 +852,11 @@ async function syncNow(){
       if(count)data.photoCount[d.name]=count;
     });
   }catch(e){}
+  // Photo base64 data (compressed thumbnails for cloud)
+  D.forEach(d=>{
+    const photos=getPhotosForSync(key(d.id));
+    if(photos.length)data.photos[d.name]=photos.slice(-5); // last 5 photos
+  });
   try{
     setSyncStatus('syncing');
     const r=await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data)});
@@ -910,7 +952,7 @@ function doPost(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = JSON.parse(e.postData.contents);
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(["Timestamp","Salesperson","Region","Visits","GPS","Notes","Contacts","Photo Count"]);
+    sheet.appendRow(["Timestamp","Salesperson","Region","Visits","GPS","Notes","Contacts","Photo Count","Photos"]);
   }
   sheet.appendRow([
     data.timestamp || new Date().toISOString(),
@@ -920,7 +962,8 @@ function doPost(e) {
     JSON.stringify(data.gps),
     JSON.stringify(data.notes),
     JSON.stringify(data.contacts || {}),
-    JSON.stringify(data.photoCount || {})
+    JSON.stringify(data.photoCount || {}),
+    JSON.stringify(data.photos || {})
   ]);
   return ContentService.createTextOutput("OK");
 }
@@ -946,7 +989,7 @@ function doGet() {
   document.getElementById('gsSetupGuide').innerHTML=guide;
 }
 function copyScript(){
-  const code='function doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var data = JSON.parse(e.postData.contents);\n  if (sheet.getLastRow() === 0) {\n    sheet.appendRow(["Timestamp","Salesperson","Region","Visits","GPS","Notes","Contacts","Photo Count"]);\n  }\n  sheet.appendRow([\n    data.timestamp || new Date().toISOString(),\n    data.sp || "",\n    data.region || "",\n    JSON.stringify(data.visits),\n    JSON.stringify(data.gps),\n    JSON.stringify(data.notes),\n    JSON.stringify(data.contacts || {}),\n    JSON.stringify(data.photoCount || {})\n  ]);\n  return ContentService.createTextOutput("OK");\n}\n\nfunction doGet() {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var values = sheet.getDataRange().getValues();\n  if (values.length < 2) return ContentService.createTextOutput("[]");\n  var headers = values.shift();\n  var result = values.map(function(row) {\n    var obj = {};\n    headers.forEach(function(h, i) { obj[h] = row[i] || ""; });\n    return obj;\n  });\n  return ContentService.createTextOutput(JSON.stringify(result))\n    .setMimeType(ContentService.MimeType.JSON);\n}';
+  const code='function doPost(e) {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var data = JSON.parse(e.postData.contents);\n  if (sheet.getLastRow() === 0) {\n    sheet.appendRow(["Timestamp","Salesperson","Region","Visits","GPS","Notes","Contacts","Photo Count","Photos"]);\n  }\n  sheet.appendRow([\n    data.timestamp || new Date().toISOString(),\n    data.sp || "",\n    data.region || "",\n    JSON.stringify(data.visits),\n    JSON.stringify(data.gps),\n    JSON.stringify(data.notes),\n    JSON.stringify(data.contacts || {}),\n    JSON.stringify(data.photoCount || {}),\n    JSON.stringify(data.photos || {})\n  ]);\n  return ContentService.createTextOutput("OK");\n}\n\nfunction doGet() {\n  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();\n  var values = sheet.getDataRange().getValues();\n  if (values.length < 2) return ContentService.createTextOutput("[]");\n  var headers = values.shift();\n  var result = values.map(function(row) {\n    var obj = {};\n    headers.forEach(function(h, i) { obj[h] = row[i] || ""; });\n    return obj;\n  });\n  return ContentService.createTextOutput(JSON.stringify(result))\n    .setMimeType(ContentService.MimeType.JSON);\n}';
   navigator.clipboard.writeText(code).then(()=>toast('📋 Script copied!')).catch(()=>toast('Copy manually — select the text'));
 }
 
