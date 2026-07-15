@@ -112,6 +112,7 @@ h1{font-size:22px;font-weight:700;background:var(--grad);-webkit-background-clip
 <span class="tab-btn" data-t="map" onclick="swTab('map',this)">🗺️ Map</span>
 <span class="tab-btn" data-t="team" onclick="swTab('team',this);renderTeam()">👥 Team</span>
 <span class="tab-btn" data-t="report" onclick="swTab('report',this)">📈 Report</span>
+<span class="tab-btn" data-t="roi" onclick="swTab('roi',this)">💰 ROI</span>
 </div>
 
 <!-- Overview -->
@@ -152,15 +153,20 @@ h1{font-size:22px;font-weight:700;background:var(--grad);-webkit-background-clip
 </div>
 
 <div class="tab-content" id="tReport">
-<div class="kpi" id="rptKPI"></div>
-<div class="rpt-btns">
-<button class="rpt-btn" onclick="genReport('today')">📅 Today</button>
-<button class="rpt-btn" onclick="genReport('week')">📊 This Week</button>
-<button class="rpt-btn" onclick="genReport('month')">📈 This Month</button>
-<button class="rpt-btn" onclick="exportCSV()">📥 Export CSV</button>
-<button class="rpt-btn" onclick="exportJSON()">📤 Export JSON</button>
+  <div class="kpi" id="rptKPI"></div>
+  <div class="rpt-btns">
+    <button class="rpt-btn" onclick="genReport('today')">📅 Today</button>
+    <button class="rpt-btn" onclick="genReport('week')">📊 This Week</button>
+    <button class="rpt-btn" onclick="genReport('month')">📈 This Month</button>
+    <button class="rpt-btn" onclick="exportCSV()">📥 Export CSV</button>
+    <button class="rpt-btn" onclick="exportJSON()">📤 Export JSON</button>
+  </div>
+  <div style="overflow-x:auto" id="rptContent"><p style="font-size:11px;color:var(--text2)">Select a report period above</p></div>
 </div>
-<div style="overflow-x:auto" id="rptContent"><p style="font-size:11px;color:var(--text2)">Select a report period above</p></div>
+
+<!-- ROI -->
+<div class="tab-content" id="tRoi">
+  <iframe src="roi.html" style="width:100%;height:calc(100vh - 200px);border:none;border-radius:10px;background:#fff"></iframe>
 </div>
 </div>
 
