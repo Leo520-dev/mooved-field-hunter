@@ -169,7 +169,8 @@ body.mobile #mapContainer{height:280px}
 <div class="hr">
 <div><h1>📍 MOOVED Hunter</h1><span class="badge">Ghana · 2026</span></div>
 <div class="ha">
-<input class="sp-input" id="salespersonInput" placeholder="Your name" onchange="saveSalesperson()">
+<input class="st-input" id="spName" placeholder="Loading..." onfocus="loadTeamList()" onchange="onSalespersonChange()" style="width:130px;border:2px solid var(--accent)" list="spList">
+<datalist id="spList"></datalist>
 <button class="tb active" data-t="light" onclick="setTheme('light')"></button>
 <button class="tb" data-t="dark" onclick="setTheme('dark')"></button>
 <button class="tb" data-t="cyber" onclick="setTheme('cyber')"></button>
@@ -202,6 +203,7 @@ body.mobile #mapContainer{height:280px}
 <div class="mc">
 <div class="tab-bar">
 <span class="tab-btn active" data-tab="hunt" onclick="switchTab('hunt',this)">🎯 Hunt</span>
+<span class="tab-btn" data-tab="myrecords" onclick="switchTab('myrecords',this);renderMyRecords()">📋 Records</span>
 <span class="tab-btn" data-tab="map" onclick="switchTab('map',this);initMap()">🗺️ Map</span>
 <span class="tab-btn" data-tab="cal" onclick="switchTab('cal',this)">📅 Calendar</span>
 <span class="tab-btn" data-tab="settings" onclick="switchTab('settings',this)">⚙️ Settings</span>
@@ -209,6 +211,12 @@ body.mobile #mapContainer{height:280px}
 </div>
 
 <div class="tc active" id="tabHunt"><div class="grid" id="districtGrid"></div><div style="text-align:center;padding:6px 0"><button class="btn-sm" style="border-color:var(--danger);color:var(--danger)" onclick="resetAll()">🔄 Reset Region Data</button></div></div>
+
+<div class="tc" id="tabMyRecords">
+<div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:6px">📋 My Contact Records</div>
+<div class="filters"><input id="mrSearch" placeholder="Search contacts..." oninput="renderMyRecords()" style="padding:5px 8px;border-radius:5px;border:1px solid var(--input-border);font-size:10px;flex:1"></div>
+<div style="overflow-x:auto" id="mrContent"><span style="font-size:10px;color:var(--text2)">Loading...</span></div>
+</div>
 
 <div class="tc" id="tabMap"><div id="mapContainer"></div><div style="font-size:9px;color:var(--text-secondary);margin-top:4px">📍 Markers colored by type. Size = rating. Click for name.</div></div>
 
@@ -374,7 +382,33 @@ function saveCheckins(){localStorage.setItem('avm_checkins',JSON.stringify(allCh
 function saveNotes(){localStorage.setItem('avm_notes',JSON.stringify(allNotes))}
 function saveAudioMeta(){localStorage.setItem('avm_audiometa',JSON.stringify(allAudioMeta))}
 function getSalesperson(){return localStorage.getItem('avm_sp')||''}
-function saveSalesperson(){const v=document.getElementById('salespersonInput').value;localStorage.setItem('avm_sp',v)}
+function saveSalesperson(){localStorage.setItem('avm_sp',document.getElementById('spName').value)}
+function onSalespersonChange(){saveSalesperson();render();toast('👤 Switched to '+getSalesperson())}
+
+// Load team list from Google Sheets
+let teamCache=JSON.parse(localStorage.getItem('avm_team')||'[]');
+async function loadTeamList(){
+  const url=getSyncConfig().url;
+  if(!url)return;
+  try{
+    const r=await fetch(url+'?action=list_sp');
+    const data=await r.json();
+    teamCache=data.names||[];
+    localStorage.setItem('avm_team',JSON.stringify(teamCache));
+    updateTeamDropdown();
+  }catch(e){updateTeamDropdown()} // use cache
+}
+function updateTeamDropdown(){
+  const list=document.getElementById('spList');
+  list.innerHTML=teamCache.map(n=>`<option value="${n}">`).join('');
+  const input=document.getElementById('spName');
+  if(!input.value&&getSalesperson())input.value=getSalesperson();
+  else if(!input.value)input.placeholder='Select name...';
+  // Auto-select last used
+  const sp=getSalesperson();
+  if(sp&&teamCache.includes(sp))input.value=sp;
+  else if(teamCache.length>0&&!sp){input.value=teamCache[0];saveSalesperson()}
+}
 function getCheckins(id){const k=key(id);return allCheckins[k]||[]}
 function getLastCheckin(id){const c=getCheckins(id);return c.length?c[c.length-1]:null}
 function getCheckinCount(id){return getCheckins(id).length}
@@ -487,14 +521,18 @@ async function showPhotoInModal(pid){
 window.showPhotoInModal=showPhotoInModal;
 
 // ═══════ CONTACTS ═══════
-async function addContact(id){
+async function addContactAndSave(id){await addContact(id);autoSyncTrigger()}
+
+async function addContact_x(id){
   const name=document.getElementById('cn_'+id);
   const phone=document.getElementById('cp_'+id);
   const interest=document.getElementById('ci_'+id);
+  const type=document.getElementById('ct_'+id);
+  const budget=document.getElementById('cb_'+id);
   if(!name||!name.value.trim()){toast('Name required');return}
-  await saveContact({district:id,region:activeRegion,name:name.value.trim(),phone:phone?phone.value:'',interest:interest?interest.value:'',sp:getSalesperson(),ts:Date.now()});
-  name.value='';if(phone)phone.value='';
-  toast('✅ Contact saved');render();
+  await saveContact({district:id,region:activeRegion,name:name.value.trim(),phone:phone?phone.value:'',interest:interest?interest.value:'',type:type?type.value:'project',budget:budget?budget.value:'',sp:getSalesperson(),ts:Date.now()});
+  name.value='';if(phone)phone.value='';if(budget)budget.value='';
+  toast('✅ Contact saved & synced');render();autoSyncTrigger();
 }
 async function delContact(id){
   await delContact(id);render();
@@ -509,7 +547,7 @@ function render(){
   let list=D.filter(d=>{if(filter!=='all'&&d.type!==filter)return false;if(q&&!d.name.toLowerCase().includes(q)&&!d.desc.toLowerCase().includes(q)&&!d.tags.some(t=>t.toLowerCase().includes(q)))return false;return true});
   if(sort==='rating')list.sort((a,b)=>b.rating-a.rating);else if(sort==='name')list.sort((a,b)=>a.name.localeCompare(b.name));
   const tl={'residential':'🏡Res','commercial':'🏢Comm','solar-market':'🔋Solar','hardware':'🔧Hw','industrial':'🏭Ind','mixed':'🔄Mix'};
-  document.getElementById('salespersonInput').value=getSalesperson();
+  document.getElementById('spName').value=getSalesperson();
   grid.innerHTML=list.map(d=>{
     const v=visited.includes(d.id),ex=expanded[d.id]||false;
     const stars=Array(5).fill(0).map((_,i)=>`<span class="star${i<d.rating?' filled':''}">★</span>`).join('');
@@ -526,7 +564,7 @@ function render(){
     let photoHtml='<div class="photos" id="ph_'+d.id+'"><button class="btn-sm" onclick="takePhoto(\''+d.id+'\')" style="border-color:var(--accent2);color:var(--accent2)">📷 Photo</button><span style="font-size:8px;color:var(--text-secondary);padding:4px" id="phc_'+d.id+'">Loading...</span></div>';
 
     // Contacts
-    const contactHtml=`<div class="ct-row"><input placeholder="Name" id="cn_${d.id}"><input placeholder="Phone" id="cp_${d.id}"><select id="ci_${d.id}"><option value="hot">🔥 Hot</option><option value="warm">💛 Warm</option><option value="cold">❄️ Cold</option></select><button class="btn-sm" style="border-color:var(--success);color:var(--success)" onclick="addContact('${d.id}')">+ Add</button></div><div class="ct-list" id="ctl_${d.id}"><span style="font-size:8px;color:var(--text-secondary)">Loading...</span></div>`;
+    const contactHtml=`<div class="ct-row"><select id="ct_${d.id}"><option value=\"project\">🏗️ Project</option><option value=\"installer\">🔧 Installer</option><option value=\"dealer\">🏪 Dealer</option></select><input placeholder="Name" id="cn_${d.id}"><input placeholder="Phone" id="cp_${d.id}"><input placeholder=\"Budget (opt)\" id=\"cb_${d.id}\" style=\"width:80px\"><select id=\"ci_${d.id}\"><option value=\"hot\">🔥 Hot</option><option value=\"warm\">💛 Warm</option><option value=\"cool\">💚 Cool</option><option value=\"cold\">❄️ Cold</option></select><button class="btn-sm" style="border-color:var(--success);color:var(--success)" onclick="addContact_x('${d.id}')">+ Add</button></div><div class="ct-list" id="ctl_${d.id}"><span style="font-size:8px;color:var(--text-secondary)">Loading...</span></div>`;
 
     return `<div class="card${v?' visited':''}">
       <div class="ch"><h3>📍 ${d.name}</h3><span class="bt ${d.type}">${tl[d.type]||d.type}</span></div>
@@ -591,11 +629,28 @@ async function loadContactsAsync(did){
     if(!contacts.length){el.innerHTML='<span style="font-size:8px;color:var(--text-secondary)">No contacts yet</span>';return}
     el.innerHTML=contacts.map(c=>{
       const ic=c.interest==='hot'?'🔥':c.interest==='warm'?'💛':'❄️';
-      return `<div class="ct-item"><span>${ic} ${c.name} ${c.phone?'📞'+c.phone:''}</span><span class="ct-del" onclick="delContact(${c.id})">✕</span></div>`;
+      const tc=c.type==='installer'?'🔧':c.type==='dealer'?'🏪':c.type==='project'?'🏗️':'📋';const budget=c.budget?' 💰'+c.budget:'';return `<div class="ct-item"><span>${ic} ${tc} ${c.name} ${c.phone?'📞'+c.phone:''}${budget}</span><span class="ct-del" onclick="delContact_x(${c.id})">✕</span></div>`;
     }).join('');
   }catch(e){el.innerHTML='<span style="font-size:8px;color:var(--text-secondary)">Error</span>'}
 }
 
+async function delContact_x(id){await delContact(id);render();}
+async function renderMyRecords(){
+  const el=document.getElementById('mrContent');if(!el)return;
+  try{
+    const allC=await allContacts();
+    const sp=getSalesperson();
+    const mine=allC.filter(c=>(c.sp===sp||!c.sp));
+    const q=(document.getElementById('mrSearch')||{}).value||'';
+    const filtered=q?mine.filter(c=>(c.name||'').toLowerCase().includes(q.toLowerCase())||(c.phone||'').includes(q)||(c.district||'').toLowerCase().includes(q.toLowerCase())):mine;
+    if(!filtered.length){el.innerHTML='<div style="padding:12px;color:var(--text-secondary);font-size:11px">No contacts for '+sp+'</div>';return}
+    el.innerHTML='<table class="data-table"><thead><tr><th>District</th><th>Type</th><th>Name</th><th>Phone</th><th>Interest</th><th>Budget</th><th>Date</th></tr></thead><tbody>'+filtered.map(c=>{
+      const ic=c.interest==='hot'?'Hot':c.interest==='warm'?'Warm':c.interest==='cool'?'Cool':'Cold';
+      const tc=c.type==='installer'?'Installer':c.type==='dealer'?'Dealer':c.type==='project'?'Project':'Other';
+      return '<tr><td>'+(c.district||'?')+'</td><td>'+tc+'</td><td><b>'+(c.name||'?')+'</b></td><td>'+(c.phone||'-')+'</td><td>'+ic+'</td><td>'+(c.budget||'-')+'</td><td style="font-size:9px">'+new Date(c.ts).toLocaleDateString()+'</td></tr>';
+    }).join('')+'</tbody></table>';
+  }catch(e){el.innerHTML='<div style="padding:12px;color:var(--red);font-size:11px">Error loading</div>'}
+}
 function saveNote(id){
   const ta=document.getElementById('nt_'+id);if(!ta||!ta.value.trim())return;
   const k=key(id);if(!allNotes[k])allNotes[k]=[];
@@ -995,7 +1050,7 @@ function copyScript(){
 
 // ═══════ INIT ═══════
 const st=localStorage.getItem('avm_t4')||'light';setTheme(st);
-document.getElementById('salespersonInput').value=getSalesperson();
+document.getElementById('spName').value=getSalesperson();
 openDB().then(()=>{render();renderRegions();updateSyncUI();resetSyncTimer();checkPWA();renderGSSetupGuide()}).catch(e=>{console.warn('DB:',e.message);render();renderRegions();updateSyncUI();resetSyncTimer();checkPWA();renderGSSetupGuide()});
 </script>
 </body>
