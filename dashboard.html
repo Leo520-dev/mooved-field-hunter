@@ -110,6 +110,7 @@ h1{font-size:22px;font-weight:700;background:var(--grad);-webkit-background-clip
 <span class="tab-btn active" data-t="overview" onclick="swTab('overview',this)">📊 Overview</span>
 <span class="tab-btn" data-t="table" onclick="swTab('table',this)">📋 Table</span>
 <span class="tab-btn" data-t="map" onclick="swTab('map',this)">🗺️ Map</span>
+<span class="tab-btn" data-t="team" onclick="swTab('team',this);renderTeam()">👥 Team</span>
 <span class="tab-btn" data-t="report" onclick="swTab('report',this)">📈 Report</span>
 </div>
 
@@ -136,6 +137,20 @@ h1{font-size:22px;font-weight:700;background:var(--grad);-webkit-background-clip
 <div class="tab-content" id="tMap"><div id="map"></div></div>
 
 <!-- Report -->
+<div class="tab-content" id="tTeam">
+<div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px">👥 Team Management</div>
+<div class="url-bar">
+<input id="teamNewName" placeholder="New salesperson name..." style="flex:1">
+<button onclick="addSalesperson()">+ Add</button>
+<span style="font-size:10px;color:var(--text2)" id="teamStatus"></span>
+</div>
+<div id="teamList" style="margin:6px 0"></div>
+<div style="font-size:10px;color:var(--text2);margin-top:8px">💡 Names added here appear in the salesperson app dropdown. Syncs to all devices.</div>
+<div style="height:12px"></div>
+<div style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:8px">📍 Pending Location Requests</div>
+<div id="pendingRequests"><span style="font-size:10px;color:var(--text2)">Loading...</span></div>
+</div>
+
 <div class="tab-content" id="tReport">
 <div class="kpi" id="rptKPI"></div>
 <div class="rpt-btns">
@@ -173,6 +188,32 @@ let mapObj=null;
 let rfTimer=null;
 let curTab='overview';
 const ACCRA={lat:5.6037,lng:-0.1870};
+
+async function loadTeam(){const url=localStorage.getItem("dash_url");if(!url)return;try{const r=await fetch(url+(url.includes('?')?'&':'?')+'action=list_sp');const d=await r.json();return (d.names||[])}catch(e){return[]}}
+async function renderTeam(){
+  const names=await loadTeam();
+  const el=document.getElementById('teamList');
+  el.innerHTML=names.length?names.map(n=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:var(--input);border:1px solid var(--card-border);border-radius:6px;margin:3px 0;font-size:11px"><span>👤 ${n}</span><button onclick="removeSalesperson('${n}')" style="border:none;background:none;color:var(--red);cursor:pointer;font-size:14px">✕</button></div>`).join(''):'<div style="font-size:10px;color:var(--text2)">No team members yet</div>';
+  // Load pending requests
+  const url=localStorage.getItem('dash_url');
+  if(!url)return;
+  try{const r=await fetch(url+'?action=pending_locations');const items=await r.json();const pr=document.getElementById('pendingRequests');pr.innerHTML=items.length?items.map(i=>`<div style="padding:6px 10px;background:var(--input);border:1px solid var(--card-border);border-radius:6px;margin:3px 0;font-size:10px;display:flex;justify-content:space-between"><span>📍 ${i.District||'?'} by ${i.RequestedBy||'?'} <span style="color:var(--orange)">${i.Status||'pending'}</span></span></div>`).join(''):'<div style="font-size:10px;color:var(--text2)">No pending requests</div>'}catch(e){}
+}
+async function addSalesperson(){
+  const name=document.getElementById('teamNewName').value.trim();if(!name)return;
+  const url=localStorage.getItem('dash_url');if(!url)return;
+  const body=JSON.stringify({action:'add_sp',name});
+  await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body});
+  document.getElementById('teamNewName').value='';renderTeam();
+  document.getElementById('teamStatus').textContent='✅ Added '+name;
+}
+async function removeSalesperson(name){
+  if(!confirm('Remove '+name+'?'))return;
+  const url=localStorage.getItem('dash_url');if(!url)return;
+  const body=JSON.stringify({action:'remove_sp',name});
+  await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body});
+  renderTeam();document.getElementById('teamStatus').textContent='❌ Removed '+name;
+}
 
 function initDB(){
   const url=localStorage.getItem('dash_url')||'https://script.google.com/macros/s/AKfycbxxX289IltGm0ubEZj8yURqZPnZUVtqsKw1-xM1GY2rtb9pI8ehb_IA4XbUZCyODryfXQ/exec';
