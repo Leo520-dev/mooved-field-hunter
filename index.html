@@ -761,7 +761,8 @@ function toggleAutoSync(){
 }
 function updateSyncUI(){
   const cfg=getSyncConfig();
-  document.getElementById('gsUrl').value=cfg.url||'';
+  const defUrl='https://script.google.com/macros/s/AKfycbxxX289IltGm0ubEZj8yURqZPnZUVtqsKw1-xM1GY2rtb9pI8ehb_IA4XbUZCyODryfXQ/exec';
+  document.getElementById('gsUrl').value=cfg.url||defUrl;
   document.getElementById('syncInterval').value=cfg.interval||0;
   const t=document.getElementById('autoSyncToggle');
   t.classList.toggle('on',!!cfg.auto);
@@ -784,7 +785,11 @@ function setSyncStatus(mode){
 
 async function syncNow(){
   const cfg=getSyncConfig();
-  if(!cfg.url){toast('❌ Set Google Sheets URL first');return}
+  const defUrl='https://script.google.com/macros/s/AKfycbxxX289IltGm0ubEZj8yURqZPnZUVtqsKw1-xM1GY2rtb9pI8ehb_IA4XbUZCyODryfXQ/exec';
+  const url=cfg.url||defUrl;
+  if(!url){toast('❌ Set Google Sheets URL first');return}
+  // Save URL if it was using default
+  if(!cfg.url){cfg.url=defUrl;localStorage.setItem('avm_sync',JSON.stringify(cfg));updateSyncUI()}
   const sp=getSalesperson();
   const data={sp,timestamp:new Date().toISOString(),region:activeRegion,visits:{},notes:{},gps:{},contacts:{},photoCount:{}};
   const D=getDistricts();
@@ -812,7 +817,7 @@ async function syncNow(){
   }catch(e){}
   try{
     setSyncStatus('syncing');
-    const r=await fetch(cfg.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data)});
+    const r=await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data)});
     cfg.lastSync=Date.now();localStorage.setItem('avm_sync',JSON.stringify(cfg));
     setSyncStatus('on');updateSyncUI();
     toast('✅ Data synced to cloud');
