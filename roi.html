@@ -55,6 +55,7 @@ body {
   gap: 12px;
   position: relative;
   flex-wrap: nowrap;
+  padding: 0 10px;
 }
 .header-brand {
   display: flex;
@@ -62,7 +63,7 @@ body {
   gap: 8px;
   min-width: 0;
   position: absolute;
-  left: 0;
+  left: 10px;
 }
 .header-logo {
   width: 36px;
@@ -83,6 +84,7 @@ body {
 }
 .header-title {
   text-align: center;
+  margin: 0 auto;
 }
 .header-title h1 {
   font-size: 17px;
@@ -97,11 +99,11 @@ body {
 }
 .header-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   flex-wrap: nowrap;
   position: absolute;
-  right: 0;
+  right: 10px;
 }
 .btn {
   padding: 8px 18px;
@@ -460,30 +462,65 @@ input[type="number"]:focus { border-color: var(--orange); }
 @media (max-width: 820px) {
   .main { grid-template-columns: 1fr; }
   .result-grid { grid-template-columns: 1fr 1fr; }
-  .header { padding: 16px; }
-  .header-title h1 { font-size: 16px; }
-  .header-title p { font-size: 11px; }
-  .header-logo { width: 30px; height: 30px; }
+  .header { padding: 12px 8px; }
+  .header-title h1 { font-size: 15px; }
+  .header-title p { font-size: 10px; }
+  .header-logo { width: 28px; height: 28px; }
 }
 @media (max-width: 600px) {
   .result-grid { grid-template-columns: 1fr; }
-  .header-inner { justify-content: flex-start; gap: 8px; }
-  .header-brand { position: static; }
-  .header-title { text-align: left; flex: 1; min-width: 0; }
-  .header-title h1 { font-size: 14px; white-space: normal; }
+  .header { padding: 10px 6px; }
+  .header-inner { justify-content: flex-start; gap: 6px; padding: 0 6px; }
+  .header-brand { position: static; left: auto; }
+  .header-title { text-align: left; flex: 1; min-width: 0; margin: 0; }
+  .header-title h1 { font-size: 13px; white-space: normal; }
   .header-title p { font-size: 10px; }
-  .header-actions { position: static; gap: 4px; }
-  .btn { padding: 6px 10px; font-size: 11px; }
-  .btn-lang { padding: 4px 8px; font-size: 11px; min-width: 32px; }
+  .header-actions { position: static; right: auto; gap: 3px; }
+  .btn { padding: 5px 8px; font-size: 10px; }
+  .btn-lang { padding: 3px 6px; font-size: 10px; min-width: 28px; }
   .input-num { width: 38px; font-size: 10px; }
-  .header-logo { width: 28px; height: 28px; }
-  .header-logo img { height: 100%; }
+  .card { padding: 12px; }
+  .result-card .value { font-size: 20px; }
 }
 @media (max-width: 400px) {
-  .header-inner { flex-wrap: wrap; }
-  .header-brand { width: 100%; justify-content: center; }
+  .header-inner { flex-wrap: wrap; justify-content: center; gap: 4px; }
+  .header-brand { width: auto; }
+  .header-title { text-align: center; width: 100%; order: -1; }
   .header-actions { width: 100%; justify-content: center; }
 }
+
+/* PDF Preview Modal */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); z-index: 9999;
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: #fff; border-radius: 12px; padding: 20px;
+  max-width: 800px; width: 90%; max-height: 90vh;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  display: flex; flex-direction: column;
+}
+.modal-box h3 { font-size: 16px; margin-bottom: 10px; color: var(--navy); }
+.modal-preview {
+  flex: 1; overflow: auto; border: 1px solid #e0e4e8;
+  border-radius: 8px; background: #f8f9fb; min-height: 300px;
+  padding: 10px; position: relative;
+}
+.modal-preview iframe { width: 100%; height: 100%; border: none; min-height: 400px; }
+.modal-actions {
+  display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px;
+}
+.modal-actions button {
+  padding: 8px 24px; border-radius: 8px; font-size: 13px;
+  font-weight: 600; cursor: pointer; border: none; font-family: var(--font);
+}
+.btn-confirm { background: var(--orange); color: #fff; }
+.btn-confirm:hover { background: #e65100; }
+.btn-cancel { background: #f0f0f0; color: #666; }
+.btn-cancel:hover { background: #e0e0e0; }
 </style>
 </head>
 <body>
@@ -493,10 +530,10 @@ input[type="number"]:focus { border-color: var(--orange); }
   <div class="header-inner">
     <div class="header-brand">
       <div class="header-logo"><img src="MOOVED_logo.jpg" alt="MOOVED"></div>
-      <div class="header-title">
-        <h1 id="title">Solar ROI Calculator</h1>
-        <p id="subtitle">MOOVED Solar — Ghana</p>
-      </div>
+    </div>
+    <div class="header-title">
+      <h1 id="title">Solar ROI Calculator</h1>
+      <p id="subtitle">MOOVED Solar — Ghana</p>
     </div>
     <div class="header-actions">
       <button class="btn btn-lang active" id="btnEN" onclick="setLang('en')">EN</button>
@@ -752,6 +789,20 @@ input[type="number"]:focus { border-color: var(--orange); }
     <span class="lbl" data-en="Calculations are estimates based on Ghana market data. Consult MOOVED for a personalized quote."
            data-zh="计算结果基于加纳市场数据估算，具体报价请咨询MOOVED。">Calculations are estimates based on Ghana market data. Consult MOOVED for a personalized quote.</span>
   </span>
+</div>
+
+<!-- PDF Preview Modal -->
+<div class="modal-overlay" id="pdfModal">
+  <div class="modal-box">
+    <h3 id="pdfModalTitle">📄 PDF Preview</h3>
+    <div class="modal-preview" id="pdfPreview">
+      <div style="text-align:center;padding:40px;color:#999">⏳ Generating preview...</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closePDFPreview()">Cancel</button>
+      <button class="btn-confirm" onclick="confirmPDF()">📥 Download PDF</button>
+    </div>
+  </div>
 </div>
 
 <!-- Toast -->
@@ -1082,6 +1133,8 @@ function drawChart(data) {
 }
 
 // ====== PDF EXPORT ======
+var pdfCanvasData = null;
+
 function exportPDF() {
   var btn = document.getElementById('btnPDF');
   btn.disabled = true;
@@ -1089,18 +1142,17 @@ function exportPDF() {
 
   // Check if html2canvas is loaded
   if (typeof html2canvas === 'undefined' || typeof jspdf === 'undefined') {
-    // Load from CDN
     var script1 = document.createElement('script');
     script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
     script1.onload = function() {
       var script2 = document.createElement('script');
       script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-      script2.onload = function() { doPDF(); };
+      script2.onload = function() { generatePreview(); };
       document.head.appendChild(script2);
     };
     document.head.appendChild(script1);
     setTimeout(function() {
-      if (typeof html2canvas !== 'undefined' && typeof jspdf !== 'undefined') doPDF();
+      if (typeof html2canvas !== 'undefined' && typeof jspdf !== 'undefined') generatePreview();
       else {
         btn.disabled = false;
         btn.textContent = '📥 PDF';
@@ -1108,11 +1160,11 @@ function exportPDF() {
       }
     }, 5000);
   } else {
-    doPDF();
+    generatePreview();
   }
 }
 
-function doPDF() {
+function generatePreview() {
   var btn = document.getElementById('btnPDF');
   var el = document.querySelector('.main');
 
@@ -1125,38 +1177,53 @@ function doPDF() {
     height: el.scrollHeight,
     windowWidth: el.scrollWidth
   }).then(function(canvas) {
-    var imgData = canvas.toDataURL('image/jpeg', 0.95);
-    var { jsPDF } = window.jspdf;
-    var pdf = new jsPDF('p', 'mm', 'a4');
-    var pdfW = pdf.internal.pageSize.getWidth();
-    var pdfH = pdf.internal.pageSize.getHeight();
-    var imgW = canvas.width;
-    var imgH = canvas.height;
-    var ratio = Math.min(pdfW / imgW, pdfH / imgH) * 0.95;
-    var finalW = imgW * ratio;
-    var finalH = imgH * ratio;
-    var xOff = (pdfW - finalW) / 2;
-    var yOff = 10;
-
-    pdf.setFontSize(16);
-    pdf.setTextColor(13, 33, 55);
-    pdf.text('MOOVED Solar ROI Report', 105, 12, { align: 'center' });
-    pdf.setFontSize(9);
-    pdf.setTextColor(138, 154, 170);
-    pdf.text(new Date().toLocaleDateString() + ' — MOOVED Solar', 105, 18, { align: 'center' });
-
-    pdf.addImage(imgData, 'JPEG', xOff, yOff + 10, finalW, finalH);
-
-    pdf.save('MOOVED_ROI_Report_' + new Date().toISOString().slice(0, 10) + '.pdf');
-
+    pdfCanvasData = canvas.toDataURL('image/jpeg', 0.95);
+    
+    // Show preview modal with the captured image
+    var preview = document.getElementById('pdfPreview');
+    preview.innerHTML = '<img src="'+pdfCanvasData+'" style="width:100%;border-radius:4px" alt="PDF Preview">';
+    document.getElementById('pdfModal').classList.add('show');
+    document.getElementById('pdfModalTitle').textContent = currentLang === 'zh' ? '📄 PDF预览 - 确认无误后下载' : '📄 PDF Preview - Confirm to Download';
+    
     btn.disabled = false;
     btn.textContent = '📥 PDF';
-    showToast(currentLang === 'zh' ? '✅ PDF已下载' : '✅ PDF downloaded');
   }).catch(function(err) {
     btn.disabled = false;
     btn.textContent = '📥 PDF';
-    showToast(currentLang === 'zh' ? 'PDF导出失败: ' + err.message : 'PDF export failed: ' + err.message);
+    showToast('Preview error: ' + err.message);
   });
+}
+
+function closePDFPreview() {
+  document.getElementById('pdfModal').classList.remove('show');
+}
+
+function confirmPDF() {
+  closePDFPreview();
+  if (!pdfCanvasData) return;
+  
+  var { jsPDF } = window.jspdf;
+  var pdf = new jsPDF('p', 'mm', 'a4');
+  var pdfW = pdf.internal.pageSize.getWidth();
+  var pdfH = pdf.internal.pageSize.getHeight();
+  
+  // Add MOOVED logo to PDF header
+  pdf.setFontSize(16);
+  pdf.setTextColor(13, 33, 55);
+  pdf.text(currentLang === 'zh' ? 'MOOVED 太阳能ROI报告' : 'MOOVED Solar ROI Report', 105, 12, { align: 'center' });
+  pdf.setFontSize(9);
+  pdf.setTextColor(138, 154, 170);
+  pdf.text(new Date().toLocaleDateString() + ' — MOOVED Solar', 105, 18, { align: 'center' });
+  
+  // Add content image
+  var imgW = pdfW * 0.95;
+  var ratio = imgW / 600;
+  var imgH = 400 * ratio;
+  
+  pdf.addImage(pdfCanvasData, 'JPEG', (pdfW - imgW) / 2, 24, imgW, imgH);
+  
+  pdf.save('MOOVED_ROI_Report_' + new Date().toISOString().slice(0, 10) + '.pdf');
+  showToast(currentLang === 'zh' ? '✅ PDF已下载' : '✅ PDF downloaded');
 }
 
 // ====== TOAST ======
