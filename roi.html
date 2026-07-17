@@ -462,26 +462,44 @@ input[type="number"]:focus { border-color: var(--orange); }
 .fv-value.orange-text { color: var(--orange); }
 .fv-value.positive { color: var(--success); }
 
-/* PDF mode - single column for clean A4 capture */
+/* PDF mode - single column report layout for clean A4 capture */
 body.pdf-mode .main {
-  max-width: 900px;
-  grid-template-columns: 280px 1fr;
-  gap: 10px;
-  padding: 10px 8px 20px;
+  max-width: 780px;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 8px 6px 16px;
 }
+body.pdf-mode .header { padding: 6px 8px; }
+body.pdf-mode .header-inner { gap: 6px; padding: 0 6px; }
+body.pdf-mode .header-brand { position: static; left: auto; }
+body.pdf-mode .header-title { text-align: left; flex: 1; min-width: 0; margin: 0; }
+body.pdf-mode .header-title h1 { font-size: 13px; white-space: normal; }
+body.pdf-mode .header-title p { font-size: 10px; }
+body.pdf-mode .header-actions { position: static; right: auto; gap: 3px; }
 body.pdf-mode .card-row { flex-direction: column; }
-body.pdf-mode .card-half { margin-bottom: 8px; }
-body.pdf-mode .result-grid { grid-template-columns: 1fr 1fr; }
-body.pdf-mode .result-card { padding: 6px 8px; }
-body.pdf-mode .result-card .value { font-size: 16px; }
-body.pdf-mode .card { padding: 8px 10px; }
-body.pdf-mode .header { padding: 8px 10px; }
-body.pdf-mode .header-title h1 { font-size: 14px; }
-body.pdf-mode .chart-area { min-height: 120px; }
-body.pdf-mode .breakdown-table { font-size: 11px; }
-body.pdf-mode .input-group { margin-bottom: 6px; }
-body.pdf-mode .input-label { font-size: 11px; }
-body.pdf-mode .input-num { width: 36px; font-size: 10px; }
+body.pdf-mode .card-half { margin-bottom: 6px; }
+body.pdf-mode .result-grid { grid-template-columns: 1fr 1fr; gap: 4px; }
+body.pdf-mode .result-card { padding: 4px 6px; }
+body.pdf-mode .result-card .value { font-size: 14px; }
+body.pdf-mode .result-card .label { font-size: 8px; }
+body.pdf-mode .result-card .sub { font-size: 9px; }
+body.pdf-mode .card { padding: 6px 8px; margin-bottom: 6px; }
+body.pdf-mode .card-title { font-size: 10px; margin-bottom: 4px; }
+body.pdf-mode .card-title .icon { font-size: 13px; }
+body.pdf-mode .chart-area { min-height: 100px; padding: 6px; }
+body.pdf-mode .breakdown-table { font-size: 10px; }
+body.pdf-mode .breakdown-table th { padding: 3px 5px; font-size: 9px; }
+body.pdf-mode .breakdown-table td { padding: 4px 5px; }
+body.pdf-mode .input-group { margin-bottom: 4px; }
+body.pdf-mode .input-label { font-size: 10px; margin-bottom: 2px; }
+body.pdf-mode .input-num { display: none; }
+body.pdf-mode .progress-container { margin: 6px 0; }
+body.pdf-mode .progress-bar-bg { height: 14px; }
+body.pdf-mode .progress-label { font-size: 9px; }
+body.pdf-mode .finance-vertical { padding: 0; }
+body.pdf-mode .fv-row { padding: 3px 6px; font-size: 10px; }
+body.pdf-mode .btn-orange { display: none; }
+body.pdf-mode .btn-lang { display: none; }
 
 /* Footer */
 .footer {
