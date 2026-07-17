@@ -462,42 +462,22 @@ input[type="number"]:focus { border-color: var(--orange); }
 .fv-value.orange-text { color: var(--orange); }
 .fv-value.positive { color: var(--success); }
 
-/* PDF mode - single column report layout for clean A4 capture */
+/* PDF mode - slightly compact for landscape A4 capture */
 body.pdf-mode .main {
-  max-width: 780px;
-  grid-template-columns: 1fr;
-  gap: 8px;
-  padding: 8px 6px 16px;
+  max-width: 1000px;
+  gap: 12px;
+  padding: 12px 10px 24px;
 }
-body.pdf-mode .header { padding: 6px 8px; }
-body.pdf-mode .header-inner { gap: 6px; padding: 0 6px; }
-body.pdf-mode .header-brand { position: static; left: auto; }
-body.pdf-mode .header-title { text-align: left; flex: 1; min-width: 0; margin: 0; }
-body.pdf-mode .header-title h1 { font-size: 13px; white-space: normal; }
-body.pdf-mode .header-title p { font-size: 10px; }
-body.pdf-mode .header-actions { position: static; right: auto; gap: 3px; }
-body.pdf-mode .card-row { flex-direction: column; }
-body.pdf-mode .card-half { margin-bottom: 6px; }
-body.pdf-mode .result-grid { grid-template-columns: 1fr 1fr; gap: 4px; }
-body.pdf-mode .result-card { padding: 4px 6px; }
-body.pdf-mode .result-card .value { font-size: 14px; }
-body.pdf-mode .result-card .label { font-size: 8px; }
-body.pdf-mode .result-card .sub { font-size: 9px; }
-body.pdf-mode .card { padding: 6px 8px; margin-bottom: 6px; }
-body.pdf-mode .card-title { font-size: 10px; margin-bottom: 4px; }
-body.pdf-mode .card-title .icon { font-size: 13px; }
-body.pdf-mode .chart-area { min-height: 100px; padding: 6px; }
-body.pdf-mode .breakdown-table { font-size: 10px; }
-body.pdf-mode .breakdown-table th { padding: 3px 5px; font-size: 9px; }
-body.pdf-mode .breakdown-table td { padding: 4px 5px; }
-body.pdf-mode .input-group { margin-bottom: 4px; }
-body.pdf-mode .input-label { font-size: 10px; margin-bottom: 2px; }
+body.pdf-mode .header { padding: 8px 10px; }
+body.pdf-mode .card { padding: 10px 12px; margin-bottom: 8px; }
+body.pdf-mode .card-title { font-size: 11px; margin-bottom: 6px; }
+body.pdf-mode .result-grid { gap: 6px; }
+body.pdf-mode .result-card { padding: 6px 8px; }
+body.pdf-mode .result-card .value { font-size: 16px; }
+body.pdf-mode .chart-area { min-height: 130px; }
+body.pdf-mode .input-group { margin-bottom: 6px; }
+body.pdf-mode .input-label { font-size: 11px; }
 body.pdf-mode .input-num { display: none; }
-body.pdf-mode .progress-container { margin: 6px 0; }
-body.pdf-mode .progress-bar-bg { height: 14px; }
-body.pdf-mode .progress-label { font-size: 9px; }
-body.pdf-mode .finance-vertical { padding: 0; }
-body.pdf-mode .fv-row { padding: 3px 6px; font-size: 10px; }
 body.pdf-mode .btn-orange { display: none; }
 body.pdf-mode .btn-lang { display: none; }
 
@@ -1209,7 +1189,6 @@ function exportPDF() {
   btn.disabled = true;
   btn.textContent = '⏳ ' + (currentLang === 'zh' ? '生成中...' : 'Generating...');
 
-  // Check if html2canvas is loaded
   if (typeof html2canvas === 'undefined' || typeof jspdf === 'undefined') {
     var script1 = document.createElement('script');
     script1.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
@@ -1236,10 +1215,9 @@ function exportPDF() {
 function generatePreview() {
   var btn = document.getElementById('btnPDF');
   
-  // Switch to PDF mode for cleaner capture
+  // Compact mode for capture
   document.body.classList.add('pdf-mode');
   
-  // Wait a tick for CSS to apply, then capture
   setTimeout(function() {
     var el = document.querySelector('.main');
 
@@ -1252,16 +1230,14 @@ function generatePreview() {
       height: el.scrollHeight,
       windowWidth: el.scrollWidth
     }).then(function(canvas) {
-      // Restore normal mode
       document.body.classList.remove('pdf-mode');
       
       pdfCanvasData = canvas.toDataURL('image/jpeg', 0.95);
       
-      // Show preview modal with the captured image
       var preview = document.getElementById('pdfPreview');
       preview.innerHTML = '<img src="'+pdfCanvasData+'" style="width:100%;border-radius:4px" alt="PDF Preview">';
       document.getElementById('pdfModal').classList.add('show');
-      document.getElementById('pdfModalTitle').textContent = currentLang === 'zh' ? '📄 PDF预览 - 确认无误后下载' : '📄 PDF Preview - Confirm to Download';
+      document.getElementById('pdfModalTitle').textContent = currentLang === 'zh' ? '📄 PDF预览' : '📄 PDF Preview';
       
       btn.disabled = false;
       btn.textContent = '📥 PDF';
@@ -1283,24 +1259,24 @@ function confirmPDF() {
   if (!pdfCanvasData) return;
   
   var { jsPDF } = window.jspdf;
-  var pdf = new jsPDF('p', 'mm', 'a4');
+  var pdf = new jsPDF('l', 'mm', 'a4');  // Landscape mode
   var pdfW = pdf.internal.pageSize.getWidth();
   var pdfH = pdf.internal.pageSize.getHeight();
   
-  // Add MOOVED logo to PDF header
-  pdf.setFontSize(16);
+  // Title
+  pdf.setFontSize(14);
   pdf.setTextColor(13, 33, 55);
-  pdf.text(currentLang === 'zh' ? 'MOOVED 太阳能ROI报告' : 'MOOVED Solar ROI Report', 105, 12, { align: 'center' });
-  pdf.setFontSize(9);
+  pdf.text(currentLang === 'zh' ? 'MOOVED 太阳能ROI报告' : 'MOOVED Solar ROI Report', pdfW/2, 10, { align: 'center' });
+  pdf.setFontSize(8);
   pdf.setTextColor(138, 154, 170);
-  pdf.text(new Date().toLocaleDateString() + ' — MOOVED Solar', 105, 18, { align: 'center' });
+  pdf.text(new Date().toLocaleDateString() + ' — MOOVED Solar', pdfW/2, 16, { align: 'center' });
   
-  // Add content image
-  var imgW = pdfW * 0.95;
-  var ratio = imgW / 600;
-  var imgH = 400 * ratio;
+  // Add content image - fit to landscape width
+  var imgW = pdfW - 20;
+  var aspectRatio = 600 / 160;
+  var imgH = imgW / aspectRatio;
   
-  pdf.addImage(pdfCanvasData, 'JPEG', (pdfW - imgW) / 2, 24, imgW, imgH);
+  pdf.addImage(pdfCanvasData, 'JPEG', 10, 20, imgW, imgH);
   
   pdf.save('MOOVED_ROI_Report_' + new Date().toISOString().slice(0, 10) + '.pdf');
   showToast(currentLang === 'zh' ? '✅ PDF已下载' : '✅ PDF downloaded');
