@@ -428,6 +428,61 @@ input[type="number"]:focus { border-color: var(--orange); }
 .tag-orange { background: var(--orange-glow); color: var(--orange); }
 .tag-green { background: #e8f5e9; color: var(--success); }
 
+/* Card row: side-by-side cards */
+.card-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.card-half {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+/* Vertical financing */
+.finance-vertical { padding: 2px 0; }
+.fv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.fv-row:last-child { border-bottom: none; }
+.fv-row.fv-total {
+  background: rgba(245,124,0,0.06);
+  border-radius: 6px;
+  margin-top: 4px;
+  font-weight: 700;
+}
+.fv-label { color: var(--text-secondary); }
+.fv-value { font-weight: 700; color: var(--navy); }
+.fv-value.orange-text { color: var(--orange); }
+.fv-value.positive { color: var(--success); }
+
+/* PDF mode - single column for clean A4 capture */
+body.pdf-mode .main {
+  max-width: 900px;
+  grid-template-columns: 280px 1fr;
+  gap: 10px;
+  padding: 10px 8px 20px;
+}
+body.pdf-mode .card-row { flex-direction: column; }
+body.pdf-mode .card-half { margin-bottom: 8px; }
+body.pdf-mode .result-grid { grid-template-columns: 1fr 1fr; }
+body.pdf-mode .result-card { padding: 6px 8px; }
+body.pdf-mode .result-card .value { font-size: 16px; }
+body.pdf-mode .card { padding: 8px 10px; }
+body.pdf-mode .header { padding: 8px 10px; }
+body.pdf-mode .header-title h1 { font-size: 14px; }
+body.pdf-mode .chart-area { min-height: 120px; }
+body.pdf-mode .breakdown-table { font-size: 11px; }
+body.pdf-mode .input-group { margin-bottom: 6px; }
+body.pdf-mode .input-label { font-size: 11px; }
+body.pdf-mode .input-num { width: 36px; font-size: 10px; }
+
 /* Footer */
 .footer {
   text-align: center;
@@ -737,48 +792,43 @@ input[type="number"]:focus { border-color: var(--orange); }
       </table>
     </div>
 
-    <!-- 25-Year Projection Chart -->
-    <div class="card">
-      <div class="card-title"><span class="icon">📈</span><span class="lbl" data-en="25-Year Cumulative Savings" data-zh="25年累计收益">25-Year Cumulative Savings</span></div>
-      <div class="chart-area">
-        <canvas id="savingsChart" width="600" height="160"></canvas>
+    <!-- 25-Year Chart + Financing side by side -->
+    <div class="card-row">
+      <div class="card card-half">
+        <div class="card-title"><span class="icon">📈</span><span class="lbl" data-en="25-Year Cumulative Savings" data-zh="25年累计收益">25-Year Cumulative Savings</span></div>
+        <div class="chart-area">
+          <canvas id="savingsChart" width="600" height="160"></canvas>
+        </div>
+      </div>
+
+      <div class="card card-half">
+        <div class="card-title"><span class="icon">🏦</span><span class="lbl" data-en="Financing Analysis" data-zh="融资方案分析">Financing Analysis</span></div>
+        <div class="finance-vertical">
+          <div class="fv-row">
+            <span class="fv-label lbl" data-en="System Price" data-zh="系统价格">System Price</span>
+            <span class="fv-value" id="finSystemPrice">₵55,000</span>
+          </div>
+          <div class="fv-row">
+            <span class="fv-label lbl" data-en="Down Payment" data-zh="首付">Down Payment</span>
+            <span class="fv-value" id="finDown">₵16,500</span>
+          </div>
+          <div class="fv-row">
+            <span class="fv-label lbl" data-en="Loan Amount" data-zh="贷款金额">Loan Amount</span>
+            <span class="fv-value" id="finLoan">₵38,500</span>
+          </div>
+          <div class="fv-row">
+            <span class="fv-label lbl" data-en="Monthly Payment" data-zh="月供">Monthly Payment</span>
+            <span class="fv-value orange-text" id="finMonthly">₵1,279</span>
+          </div>
+          <div class="fv-row fv-total">
+            <span class="fv-label lbl" data-en="Net Monthly Cash Flow" data-zh="月净现金流">Net Monthly Cash Flow</span>
+            <span class="fv-value positive" id="finNetFlow">+₵1,571</span>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- Financing Analysis -->
-    <div class="card">
-      <div class="card-title"><span class="icon">🏦</span><span class="lbl" data-en="Financing Analysis" data-zh="融资方案分析">Financing Analysis</span></div>
-      <table class="breakdown-table">
-        <thead><tr>
-          <th class="lbl" data-en="Item" data-zh="项目">Item</th>
-          <th class="lbl" data-en="Amount" data-zh="金额">Amount</th>
-        </tr></thead>
-        <tbody>
-          <tr>
-            <td><span class="lbl" data-en="System Price" data-zh="系统价格">System Price</span></td>
-            <td class="highlight" id="finSystemPrice">₵55,000</td>
-          </tr>
-          <tr>
-            <td><span class="lbl" data-en="Down Payment (30%)" data-zh="首付 (30%)">Down Payment (30%)</span></td>
-            <td class="highlight" id="finDown">₵16,500</td>
-          </tr>
-          <tr>
-            <td><span class="lbl" data-en="Loan Amount" data-zh="贷款金额">Loan Amount</span></td>
-            <td class="highlight" id="finLoan">₵38,500</td>
-          </tr>
-          <tr>
-            <td><span class="lbl" data-en="Monthly Payment" data-zh="月供">Monthly Payment (12% × 36mo)</span></td>
-            <td class="orange-text" id="finMonthly">₵1,279</td>
-          </tr>
-          <tr>
-            <td><span class="lbl" data-en="Net Monthly Cash Flow" data-zh="月净现金流">Net Monthly Cash Flow</span></td>
-            <td class="positive" id="finNetFlow">+₵1,571</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
   </div>
+</div>
 </div>
 
 <!-- Footer -->
@@ -1167,32 +1217,43 @@ function exportPDF() {
 
 function generatePreview() {
   var btn = document.getElementById('btnPDF');
-  var el = document.querySelector('.main');
+  
+  // Switch to PDF mode for cleaner capture
+  document.body.classList.add('pdf-mode');
+  
+  // Wait a tick for CSS to apply, then capture
+  setTimeout(function() {
+    var el = document.querySelector('.main');
 
-  html2canvas(el, {
-    scale: 2,
-    backgroundColor: '#f0f2f5',
-    useCORS: true,
-    logging: false,
-    width: el.scrollWidth,
-    height: el.scrollHeight,
-    windowWidth: el.scrollWidth
-  }).then(function(canvas) {
-    pdfCanvasData = canvas.toDataURL('image/jpeg', 0.95);
-    
-    // Show preview modal with the captured image
-    var preview = document.getElementById('pdfPreview');
-    preview.innerHTML = '<img src="'+pdfCanvasData+'" style="width:100%;border-radius:4px" alt="PDF Preview">';
-    document.getElementById('pdfModal').classList.add('show');
-    document.getElementById('pdfModalTitle').textContent = currentLang === 'zh' ? '📄 PDF预览 - 确认无误后下载' : '📄 PDF Preview - Confirm to Download';
-    
-    btn.disabled = false;
-    btn.textContent = '📥 PDF';
-  }).catch(function(err) {
-    btn.disabled = false;
-    btn.textContent = '📥 PDF';
-    showToast('Preview error: ' + err.message);
-  });
+    html2canvas(el, {
+      scale: 2,
+      backgroundColor: '#f0f2f5',
+      useCORS: true,
+      logging: false,
+      width: el.scrollWidth,
+      height: el.scrollHeight,
+      windowWidth: el.scrollWidth
+    }).then(function(canvas) {
+      // Restore normal mode
+      document.body.classList.remove('pdf-mode');
+      
+      pdfCanvasData = canvas.toDataURL('image/jpeg', 0.95);
+      
+      // Show preview modal with the captured image
+      var preview = document.getElementById('pdfPreview');
+      preview.innerHTML = '<img src="'+pdfCanvasData+'" style="width:100%;border-radius:4px" alt="PDF Preview">';
+      document.getElementById('pdfModal').classList.add('show');
+      document.getElementById('pdfModalTitle').textContent = currentLang === 'zh' ? '📄 PDF预览 - 确认无误后下载' : '📄 PDF Preview - Confirm to Download';
+      
+      btn.disabled = false;
+      btn.textContent = '📥 PDF';
+    }).catch(function(err) {
+      document.body.classList.remove('pdf-mode');
+      btn.disabled = false;
+      btn.textContent = '📥 PDF';
+      showToast('Preview error: ' + err.message);
+    });
+  }, 100);
 }
 
 function closePDFPreview() {
