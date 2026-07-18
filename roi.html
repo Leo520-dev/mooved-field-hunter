@@ -136,6 +136,19 @@ body {
 }
 .btn-lang.active { background: var(--orange); }
 .btn-lang:hover { background: rgba(255,255,255,0.2); }
+.btn-ghost {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font);
+  line-height: 1;
+}
+.btn-ghost:hover { border-color: var(--orange-light); background: rgba(255,255,255,0.2); }
 
 /* Main Layout */
 .main {
@@ -577,6 +590,21 @@ body.pdf-mode .btn-lang { display: none; }
 .btn-confirm:hover { background: #e65100; }
 .btn-cancel { background: #f0f0f0; color: #666; }
 .btn-cancel:hover { background: #e0e0e0; }
+
+/* Settings form */
+.st-row { display:flex; align-items:center; justify-content:space-between; padding:5px 0; border-bottom:1px solid #f0f0f0; }
+.st-lbl { font-size:12px; color:var(--text-secondary); }
+.st-inp { width:100px; padding:4px 8px; border:1.5px solid var(--border); border-radius:5px; font-size:12px; text-align:center; font-family:var(--font); outline:none; }
+.st-inp:focus { border-color:var(--orange); }
+select.st-inp { width:120px; text-align:left; }
+
+/* Card style variants */
+body.card-style-compact .card { padding: 8px; margin-bottom: 6px; }
+body.card-style-compact .card-title { font-size: 10px; margin-bottom: 4px; }
+body.card-style-compact .result-card { padding: 4px 6px; }
+body.card-style-compact .result-card .value { font-size: 14px; }
+body.card-style-minimal .card { background: transparent; box-shadow: none; border: 1px solid var(--border); padding: 8px; }
+body.card-style-minimal .card-title { font-size: 10px; color: var(--text); }
 </style>
 </head>
 <body>
@@ -595,6 +623,7 @@ body.pdf-mode .btn-lang { display: none; }
       <button class="btn btn-lang active" id="btnEN" onclick="setLang('en')">EN</button>
       <button class="btn btn-lang" id="btnCN" onclick="setLang('zh')">中文</button>
       <button class="btn btn-orange" onclick="exportPDF()" id="btnPDF">📥 PDF</button>
+      <button class="btn btn-ghost" onclick="openSettings()" id="btnSettings" title="Settings">⚙️</button>
     </div>
   </div>
 </header>
@@ -854,6 +883,46 @@ body.pdf-mode .btn-lang { display: none; }
   </div>
 </div>
 
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-box" style="max-width:600px">
+    <h3>⚙️ <span class="lbl" data-en="ROI Settings" data-zh="ROI设置">ROI Settings</span></h3>
+    <div style="flex:1;overflow-y:auto;padding:4px 0">
+
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin:8px 0 4px;border-bottom:1px solid var(--border);padding-bottom:4px">
+        📊 <span class="lbl" data-en="Data Defaults" data-zh="数据默认值">Data Defaults</span>
+      </div>
+
+      <div class="st-row"><span class="st-lbl">Grid Rate (GHS/kWh)</span><input class="st-inp" id="setGridRate" type="number" step="0.05" min="0.5" max="5" value="1.05"></div>
+      <div class="st-row"><span class="st-lbl">Diesel Price (GHS/L)</span><input class="st-inp" id="setDiesel" type="number" step="0.5" min="5" max="50" value="15"></div>
+      <div class="st-row"><span class="st-lbl">Solar Insolation (hrs/day)</span><input class="st-inp" id="setSun" type="number" step="0.1" min="2" max="8" value="4.5"></div>
+      <div class="st-row"><span class="st-lbl">System Efficiency (%)</span><input class="st-inp" id="setEff" type="number" step="1" min="50" max="95" value="78"></div>
+      <div class="st-row"><span class="st-lbl">Annual Escalation (%)</span><input class="st-inp" id="setEsc" type="number" step="0.5" min="0" max="20" value="5"></div>
+      <div class="st-row"><span class="st-lbl">Interest Rate (% APR)</span><input class="st-inp" id="setInt" type="number" step="0.5" min="0" max="30" value="12"></div>
+
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin:12px 0 4px;border-bottom:1px solid var(--border);padding-bottom:4px">
+        🎨 <span class="lbl" data-en="Display" data-zh="显示设置">Display</span>
+      </div>
+
+      <div class="st-row"><span class="st-lbl">Card Style</span>
+        <select class="st-inp" id="setCardStyle">
+          <option value="default"><span class="lbl" data-en="Default" data-zh="默认">Default</span></option>
+          <option value="compact"><span class="lbl" data-en="Compact" data-zh="紧凑">Compact</span></option>
+          <option value="minimal"><span class="lbl" data-en="Minimal" data-zh="极简">Minimal</span></option>
+        </select>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn-cancel" onclick="resetSettings()" style="padding:6px 14px;font-size:12px">🔄 <span class="lbl" data-en="Reset" data-zh="重置">Reset</span></button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeSettings()"><span class="lbl" data-en="Cancel" data-zh="取消">Cancel</span></button>
+      <button class="btn-confirm" onclick="saveSettings()">💾 <span class="lbl" data-en="Save" data-zh="保存">Save</span></button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
@@ -922,6 +991,55 @@ function setLang(lang) {
 function t(key) {
   // Simple translation lookup from data attributes
   return key;
+}
+
+// ====== SETTINGS ======
+function openSettings() {
+  var s = JSON.parse(localStorage.getItem('roi_settings') || '{}');
+  document.getElementById('setGridRate').value = s.gridRate || 1.05;
+  document.getElementById('setDiesel').value = s.dieselPrice || 15;
+  document.getElementById('setSun').value = s.peakSun || 4.5;
+  document.getElementById('setEff').value = (s.sysEff || 0.78) * 100;
+  document.getElementById('setEsc').value = (s.escalation || 0.05) * 100;
+  document.getElementById('setInt').value = (s.interest || 0.12) * 100;
+  document.getElementById('setCardStyle').value = s.cardStyle || 'default';
+  document.getElementById('settingsModal').classList.add('show');
+}
+function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
+function saveSettings() {
+  var s = {
+    gridRate: parseFloat(document.getElementById('setGridRate').value) || 1.05,
+    dieselPrice: parseFloat(document.getElementById('setDiesel').value) || 15,
+    peakSun: parseFloat(document.getElementById('setSun').value) || 4.5,
+    sysEff: (parseFloat(document.getElementById('setEff').value) || 78) / 100,
+    escalation: (parseFloat(document.getElementById('setEsc').value) || 5) / 100,
+    interest: (parseFloat(document.getElementById('setInt').value) || 12) / 100,
+    cardStyle: document.getElementById('setCardStyle').value
+  };
+  localStorage.setItem('roi_settings', JSON.stringify(s));
+  applySettings(s);
+  closeSettings();
+  showToast(currentLang === 'zh' ? '✅ 设置已保存' : '✅ Settings saved');
+}
+function resetSettings() {
+  localStorage.removeItem('roi_settings');
+  applySettings();
+  openSettings();
+  showToast(currentLang === 'zh' ? '🔄 已重置为默认' : '🔄 Reset to defaults');
+}
+function applySettings(s) {
+  if (!s) { s = JSON.parse(localStorage.getItem('roi_settings') || '{}'); }
+  GHANA.gridRate = s.gridRate || 1.05;
+  GHANA.dieselPrice = s.dieselPrice || 15;
+  GHANA.peakSunHours = s.peakSun || 4.5;
+  GHANA.systemEff = s.sysEff || 0.78;
+  GHANA.escalation = s.escalation || 0.05;
+  GHANA.interestRate = s.interest || 0.12;
+  // Card style
+  document.body.classList.remove('card-style-compact', 'card-style-minimal');
+  if (s.cardStyle === 'compact') document.body.classList.add('card-style-compact');
+  if (s.cardStyle === 'minimal') document.body.classList.add('card-style-minimal');
+  calc();
 }
 
 // ====== GHANA DATA CONSTANTS ======
@@ -1264,30 +1382,41 @@ function confirmPDF() {
 
   var { jsPDF } = window.jspdf;
   var pdf = new jsPDF('l', 'mm', 'a4');
-  var pdfW = pdf.internal.pageSize.getWidth();  // 297mm
-  var pdfH = pdf.internal.pageSize.getHeight();  // 210mm
+  var pdfW = pdf.internal.pageSize.getWidth();
+  var pdfH = pdf.internal.pageSize.getHeight();
+
+  // Get MOOVED logo from the DOM and convert to base64 for PDF
+  var logoImg = document.querySelector('.header-logo img');
+  var logoData = '';
+  if (logoImg && logoImg.complete && logoImg.naturalWidth > 0) {
+    var c = document.createElement('canvas');
+    c.width = logoImg.naturalWidth;
+    c.height = logoImg.naturalHeight;
+    var ctx = c.getContext('2d');
+    ctx.drawImage(logoImg, 0, 0);
+    logoData = c.toDataURL('image/png');
+  }
 
   // Calculate aspect ratio from actual captured image
-  var margin = 8; // mm margin on each side
-  var maxW = pdfW - margin * 2;  // 281mm usable width
-  var maxH = pdfH - margin * 2 - 14;  // ~188mm usable (minus title area)
+  var margin = 8;
+  var maxW = pdfW - margin * 2;
+  var maxH = pdfH - margin * 2 - 14;
 
   var aspectRatio = pdfCanvasW / pdfCanvasH;
-
-  // Scale to fit within maxW × maxH
   var renderW = maxW;
   var renderH = renderW / aspectRatio;
-
   if (renderH > maxH) {
     renderH = maxH;
     renderW = renderH * aspectRatio;
   }
 
-  // Center on page
   var xOff = (pdfW - renderW) / 2;
-  var yOff = margin + 14;  // 14mm for title
+  var yOff = margin + 14;
 
-  // Title
+  // Header: Logo on left, title centered
+  if (logoData) {
+    pdf.addImage(logoData, 'PNG', margin, 3, 14, 14);
+  }
   pdf.setFontSize(12);
   pdf.setTextColor(13, 33, 55);
   pdf.text(currentLang === 'zh' ? 'MOOVED Solar ROI Report' : 'MOOVED Solar ROI Report', pdfW / 2, 10, { align: 'center' });
@@ -1295,7 +1424,7 @@ function confirmPDF() {
   pdf.setTextColor(138, 154, 170);
   pdf.text(new Date().toLocaleDateString() + ' — MOOVED Solar', pdfW / 2, 15, { align: 'center' });
 
-  // Add image with correct aspect ratio
+  // Add content image with correct aspect ratio
   pdf.addImage(pdfCanvasData, 'JPEG', xOff, yOff, renderW, renderH);
 
   pdf.save('MOOVED_ROI_Report_' + new Date().toISOString().slice(0, 10) + '.pdf');
@@ -1317,6 +1446,7 @@ window.addEventListener('resize', function() {
 
 // ====== INIT ======
 document.addEventListener('DOMContentLoaded', function() {
+  applySettings();
   calc();
 });
 </script>
