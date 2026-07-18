@@ -1183,6 +1183,8 @@ function drawChart(data) {
 
 // ====== PDF EXPORT ======
 var pdfCanvasData = null;
+var pdfCanvasW = 0;
+var pdfCanvasH = 0;
 
 function exportPDF() {
   var btn = document.getElementById('btnPDF');
@@ -1214,10 +1216,8 @@ function exportPDF() {
 
 function generatePreview() {
   var btn = document.getElementById('btnPDF');
-  
-  // Compact mode for capture
   document.body.classList.add('pdf-mode');
-  
+
   setTimeout(function() {
     var el = document.querySelector('.main');
 
@@ -1231,14 +1231,18 @@ function generatePreview() {
       windowWidth: el.scrollWidth
     }).then(function(canvas) {
       document.body.classList.remove('pdf-mode');
-      
-      pdfCanvasData = canvas.toDataURL('image/jpeg', 0.95);
-      
+
+      // Save both data URL and actual dimensions
+      pdfCanvasW = canvas.width;
+      pdfCanvasH = canvas.height;
+      pdfCanvasData = canvas.toDataURL('image/jpeg', 0.92);
+
+      // Show preview
       var preview = document.getElementById('pdfPreview');
-      preview.innerHTML = '<img src="'+pdfCanvasData+'" style="width:100%;border-radius:4px" alt="PDF Preview">';
+      preview.innerHTML = '<img src="'+pdfCanvasData+'" style="max-width:100%;max-height:60vh;border-radius:4px" alt="PDF Preview">';
       document.getElementById('pdfModal').classList.add('show');
       document.getElementById('pdfModalTitle').textContent = currentLang === 'zh' ? '📄 PDF预览' : '📄 PDF Preview';
-      
+
       btn.disabled = false;
       btn.textContent = '📥 PDF';
     }).catch(function(err) {
@@ -1256,28 +1260,44 @@ function closePDFPreview() {
 
 function confirmPDF() {
   closePDFPreview();
-  if (!pdfCanvasData) return;
-  
+  if (!pdfCanvasData || !pdfCanvasW || !pdfCanvasH) return;
+
   var { jsPDF } = window.jspdf;
-  var pdf = new jsPDF('l', 'mm', 'a4');  // Landscape mode
-  var pdfW = pdf.internal.pageSize.getWidth();
-  var pdfH = pdf.internal.pageSize.getHeight();
-  
+  var pdf = new jsPDF('l', 'mm', 'a4');
+  var pdfW = pdf.internal.pageSize.getWidth();  // 297mm
+  var pdfH = pdf.internal.pageSize.getHeight();  // 210mm
+
+  // Calculate aspect ratio from actual captured image
+  var margin = 8; // mm margin on each side
+  var maxW = pdfW - margin * 2;  // 281mm usable width
+  var maxH = pdfH - margin * 2 - 14;  // ~188mm usable (minus title area)
+
+  var aspectRatio = pdfCanvasW / pdfCanvasH;
+
+  // Scale to fit within maxW × maxH
+  var renderW = maxW;
+  var renderH = renderW / aspectRatio;
+
+  if (renderH > maxH) {
+    renderH = maxH;
+    renderW = renderH * aspectRatio;
+  }
+
+  // Center on page
+  var xOff = (pdfW - renderW) / 2;
+  var yOff = margin + 14;  // 14mm for title
+
   // Title
-  pdf.setFontSize(14);
+  pdf.setFontSize(12);
   pdf.setTextColor(13, 33, 55);
-  pdf.text(currentLang === 'zh' ? 'MOOVED 太阳能ROI报告' : 'MOOVED Solar ROI Report', pdfW/2, 10, { align: 'center' });
-  pdf.setFontSize(8);
+  pdf.text(currentLang === 'zh' ? 'MOOVED Solar ROI Report' : 'MOOVED Solar ROI Report', pdfW / 2, 10, { align: 'center' });
+  pdf.setFontSize(7);
   pdf.setTextColor(138, 154, 170);
-  pdf.text(new Date().toLocaleDateString() + ' — MOOVED Solar', pdfW/2, 16, { align: 'center' });
-  
-  // Add content image - fit to landscape width
-  var imgW = pdfW - 20;
-  var aspectRatio = 600 / 160;
-  var imgH = imgW / aspectRatio;
-  
-  pdf.addImage(pdfCanvasData, 'JPEG', 10, 20, imgW, imgH);
-  
+  pdf.text(new Date().toLocaleDateString() + ' — MOOVED Solar', pdfW / 2, 15, { align: 'center' });
+
+  // Add image with correct aspect ratio
+  pdf.addImage(pdfCanvasData, 'JPEG', xOff, yOff, renderW, renderH);
+
   pdf.save('MOOVED_ROI_Report_' + new Date().toISOString().slice(0, 10) + '.pdf');
   showToast(currentLang === 'zh' ? '✅ PDF已下载' : '✅ PDF downloaded');
 }
