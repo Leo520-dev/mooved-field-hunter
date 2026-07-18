@@ -34,6 +34,7 @@ body {
   color: var(--text);
   line-height: 1.6;
   min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* Header */
@@ -77,8 +78,8 @@ body {
   padding: 3px;
 }
 .header-logo img {
+  width: 100%;
   height: 100%;
-  width: auto;
   display: block;
   object-fit: contain;
 }
@@ -605,6 +606,23 @@ body.card-style-compact .result-card { padding: 4px 6px; }
 body.card-style-compact .result-card .value { font-size: 14px; }
 body.card-style-minimal .card { background: transparent; box-shadow: none; border: 1px solid var(--border); padding: 8px; }
 body.card-style-minimal .card-title { font-size: 10px; color: var(--text); }
+
+/* Theme variants */
+body[data-theme="light"] {
+  --bg: #f5f7fa; --card-bg: #ffffff; --text: #1a1a2e; --text-secondary: #5a6a7a;
+  --border: #e0e4e8; --shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+body[data-theme="dark"] {
+  --bg: #0f172a; --card-bg: rgba(30,41,59,0.9); --text: #e2e8f0;
+  --text-secondary: #94a3b8; --text-light: #64748b; --border: rgba(148,163,184,0.15);
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+  --navy: #e2e8f0; --orange: #f59e0b; --orange-light: #fbbf24; --orange-glow: rgba(245,158,11,0.15);
+  --success: #34d399; --danger: #f87171;
+}
+body[data-theme="dark"] .result-card { background: rgba(30,41,59,0.6); }
+body[data-theme="dark"] .chart-area { background: rgba(30,41,59,0.6); }
+body[data-theme="dark"] .fv-row { border-color: rgba(148,163,184,0.1); }
+body[data-theme="dark"] .modal-box { background: #1e293b; color: #e2e8f0; }
 </style>
 </head>
 <body>
@@ -906,9 +924,17 @@ body.card-style-minimal .card-title { font-size: 10px; color: var(--text); }
 
       <div class="st-row"><span class="st-lbl">Card Style</span>
         <select class="st-inp" id="setCardStyle">
-          <option value="default"><span class="lbl" data-en="Default" data-zh="默认">Default</span></option>
-          <option value="compact"><span class="lbl" data-en="Compact" data-zh="紧凑">Compact</span></option>
-          <option value="minimal"><span class="lbl" data-en="Minimal" data-zh="极简">Minimal</span></option>
+          <option value="default">Default</option>
+          <option value="compact">Compact</option>
+          <option value="minimal">Minimal</option>
+        </select>
+      </div>
+
+      <div class="st-row"><span class="st-lbl">Theme</span>
+        <select class="st-inp" id="setTheme">
+          <option value="mooved">MOOVED (Deep Blue)</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
         </select>
       </div>
 
@@ -1003,6 +1029,7 @@ function openSettings() {
   document.getElementById('setEsc').value = (s.escalation || 0.05) * 100;
   document.getElementById('setInt').value = (s.interest || 0.12) * 100;
   document.getElementById('setCardStyle').value = s.cardStyle || 'default';
+  document.getElementById('setTheme').value = s.theme || 'mooved';
   document.getElementById('settingsModal').classList.add('show');
 }
 function closeSettings() { document.getElementById('settingsModal').classList.remove('show'); }
@@ -1014,7 +1041,8 @@ function saveSettings() {
     sysEff: (parseFloat(document.getElementById('setEff').value) || 78) / 100,
     escalation: (parseFloat(document.getElementById('setEsc').value) || 5) / 100,
     interest: (parseFloat(document.getElementById('setInt').value) || 12) / 100,
-    cardStyle: document.getElementById('setCardStyle').value
+    cardStyle: document.getElementById('setCardStyle').value,
+    theme: document.getElementById('setTheme').value
   };
   localStorage.setItem('roi_settings', JSON.stringify(s));
   applySettings(s);
@@ -1039,6 +1067,10 @@ function applySettings(s) {
   document.body.classList.remove('card-style-compact', 'card-style-minimal');
   if (s.cardStyle === 'compact') document.body.classList.add('card-style-compact');
   if (s.cardStyle === 'minimal') document.body.classList.add('card-style-minimal');
+  // Theme
+  var theme = s.theme || 'mooved';
+  if (theme === 'mooved') document.body.removeAttribute('data-theme');
+  else document.body.dataset.theme = theme;
   calc();
 }
 
@@ -1413,9 +1445,15 @@ function confirmPDF() {
   var xOff = (pdfW - renderW) / 2;
   var yOff = margin + 14;
 
-  // Header: Logo on left, title centered
+  // Header: Logo on left (preserve aspect ratio), title centered
   if (logoData) {
-    pdf.addImage(logoData, 'PNG', margin, 3, 14, 14);
+    var lw = logoImg.naturalWidth;
+    var lh = logoImg.naturalHeight;
+    var lr = lw / lh;
+    var logoH = 14;
+    var logoW = logoH * lr;
+    if (logoW > 30) { logoW = 30; logoH = logoW / lr; }
+    pdf.addImage(logoData, 'PNG', margin, 3, logoW, logoH);
   }
   pdf.setFontSize(12);
   pdf.setTextColor(13, 33, 55);
