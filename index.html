@@ -14,6 +14,20 @@
 [data-theme="warm"]{--bg:#fef7f0;--card-bg:rgba(255,255,255,0.8);--card-border:rgba(255,200,150,0.3);--card-shadow:0 4px 24px rgba(200,100,50,0.08);--text:#2d1810;--text-secondary:#8b6b5a;--accent:#e86a2c;--accent2:#f59e0b;--accent3:#d97706;--gradient:linear-gradient(135deg,#e86a2c,#f59e0b,#d97706);--input-bg:#fff;--input-border:#f0d5c5}
 [data-theme="forest"]{--bg:#eef6ee;--card-bg:rgba(255,255,255,0.75);--card-border:rgba(120,180,120,0.25);--card-shadow:0 4px 24px rgba(0,0,0,0.08);--text:#1a2e1a;--text-secondary:#4a6b4a;--accent:#2d8a4e;--accent2:#4ade80;--accent3:#16a34a;--gradient:linear-gradient(135deg,#2d8a4e,#4ade80,#16a34a);--input-bg:#fff;--input-border:#c8e0c8}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;transition:background var(--transition),color var(--transition);overflow-x:hidden}
+/* LOGIN OVERLAY */
+.login-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);z-index:9999;display:none;align-items:center;justify-content:center;color:#fff}
+.login-card{background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.15);border-radius:24px;padding:32px;width:min(400px,90vw);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-card h2{font-size:24px;margin-bottom:4px;background:linear-gradient(135deg,#6366f1,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.login-card p{font-size:12px;color:rgba(255,255,255,.6);margin-bottom:20px}
+.login-input{width:100%;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:14px;margin-bottom:12px;outline:none;box-sizing:border-box}
+.login-input:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.3)}
+.login-input::placeholder{color:rgba(255,255,255,.4)}
+.login-btn{width:100%;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,#6366f1,#06b6d4);color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:.3s}
+.login-btn:hover{opacity:.9;transform:translateY(-1px)}
+.login-btn:disabled{opacity:.5;cursor:not-allowed}
+.login-error{color:#ef4444;font-size:12px;margin-top:8px;min-height:18px}
+.login-footer{font-size:10px;color:rgba(255,255,255,.4);margin-top:16px}
+
 .app{max-width:1200px;margin:0 auto;padding:16px 16px 40px}
 .sticky-header{position:sticky;top:0;z-index:100;background:var(--bg);padding:6px 16px 2px;margin:0 -16px;box-shadow:0 2px 12px rgba(0,0,0,.04);transition:background var(--transition)}
 body.mobile .sticky-header{padding:4px 12px 2px;margin:0 -12px}
@@ -164,13 +178,27 @@ body.mobile #mapContainer{height:280px}
 </style>
 </head>
 <body>
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div style="font-size:40px;margin-bottom:8px">&#9728;&#65039;</div>
+    <h2>MOOVED Field Sales</h2>
+    <p>Sign in to access your district hunter dashboard</p>
+    <input class="login-input" id="loginUser" placeholder="Username" autocomplete="username" autofocus>
+    <input class="login-input" id="loginPass" placeholder="Password" type="password" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-footer">MOOVED Solar Ghana • 2026</div>
+  </div>
+</div>
+
 <div class="app">
 <div class="sticky-header">
 <div class="hr">
 <div><h1>📍 MOOVED Hunter</h1><span class="badge">Ghana · 2026</span></div>
 <div class="ha">
-<input class="st-input" id="spName" placeholder="Loading..." onfocus="loadTeamList()" onchange="onSalespersonChange()" style="width:130px;border:2px solid var(--accent)" list="spList">
-<datalist id="spList"></datalist>
+<span id="loggedInUser" style="font-size:10px;color:var(--text-secondary);white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis" title=""></span>
+<button class="btn-sm" id="logoutBtn" style="border-color:var(--danger);color:var(--danger);display:none" onclick="doLogout()">&#128682; Logout</button>
 <button class="tb active" data-t="light" onclick="setTheme('light')"></button>
 <button class="tb" data-t="dark" onclick="setTheme('dark')"></button>
 <button class="tb" data-t="cyber" onclick="setTheme('cyber')"></button>
@@ -264,6 +292,13 @@ body.mobile #mapContainer{height:280px}
 </div>
 
 <div style="height:12px"></div>
+<div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:8px">📤 Import / Export Data</div>
+<div class="st-row" style="border-bottom:none">
+<button class="btn-sm" style="border-color:var(--accent);color:var(--accent)" onclick="exportCurrentData()">📥 Export JSON</button>
+<button class="btn-sm" style="border-color:var(--success);color:var(--success)" onclick="document.getElementById('importFile').click()">📤 Import JSON</button>
+<input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+</div>
+<div style="height:12px"></div>
 <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:8px">📖 How to Set Up Google Sheets Sync</div>
 <div class="pwa-info" id="gsSetupGuide">Loading instructions...</div>
 
@@ -296,6 +331,7 @@ If you do not consent, do not use this app.
 <div class="toast" id="toast"></div>
 <div class="photo-modal" id="photoModal" onclick="this.classList.remove('open')"><img id="photoModalImg"></div>
 
+<script src="auth.js"></script>
 <script>
 (function(){if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobi|Mobi/i.test(navigator.userAgent))document.body.classList.add('mobile')})();
 
@@ -304,7 +340,7 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch
 
 // ═══════ IndexedDB ═══════
 let DB=null;
-function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('AvmV4',2);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('audio'))d.createObjectStore('audio',{keyPath:'id'});if(!d.objectStoreNames.contains('photos'))d.createObjectStore('photos',{keyPath:'id'});if(!d.objectStoreNames.contains('contacts')){const s=d.createObjectStore('contacts',{keyPath:'id',autoIncrement:true});s.createIndex('district','district',{unique:false})}};r.onsuccess=e=>{DB=e.target.result;res()};r.onerror=rej})}
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open('AvmV4',2);r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('audio'))d.createObjectStore('audio',{keyPath:'id'});if(!d.objectStoreNames.contains('photos'))d.createObjectStore('photos',{keyPath:'id'});if(!d.objectStoreNames.contains('contacts')){const s=d.createObjectStore('contacts',{keyPath:'id',autoIncrement:true});s.createIndex('district','district',{unique:false});s.createIndex('sp','sp',{unique:false})}};r.onsuccess=e=>{DB=e.target.result;res()};r.onerror=rej})}
 function dbStore(name){const t=DB.transaction([name],'readwrite');return t.objectStore(name)}
 function dbRead(name){const t=DB.transaction([name],'readonly');return t.objectStore(name)}
 function saveAudio(id,blob){return new Promise((res,rej)=>{const r=dbStore('audio').put({id,blob,ts:Date.now()});r.onsuccess=()=>res();r.onerror=e=>rej(e)})}
@@ -313,10 +349,10 @@ function delAudio(id){return new Promise(res=>{const r=dbStore('audio').delete(i
 function savePhoto(id,blob,caption){return new Promise((res,rej)=>{const r=dbStore('photos').put({id,blob,ts:Date.now(),caption:caption||''});r.onsuccess=()=>res();r.onerror=e=>rej(e)})}
 function loadPhotos(districtId){return new Promise(res=>{const items=[];const r=dbRead('photos').openCursor();r.onsuccess=e=>{const c=e.target.result;if(c){if(c.value.id.startsWith(districtId+'_'))items.push(c.value);c.continue()}else res(items)};r.onerror=()=>res([])})}
 function delPhoto(id){return new Promise(res=>{dbStore('photos').delete(id);res()})}
-function saveContact(contact){return new Promise((res,rej)=>{const r=dbStore('contacts').add({...contact,ts:Date.now()});r.onsuccess=()=>res();r.onerror=rej})}
-function loadContacts(districtId){return new Promise(res=>{const items=[];const idx=dbRead('contacts').index('district');const r=idx.openCursor(IDBKeyRange.only(districtId));r.onsuccess=e=>{const c=e.target.result;if(c){items.push(c.value);c.continue()}else res(items)};r.onerror=()=>res([])})}
+function saveContact(contact){return new Promise((res,rej)=>{const c=setSpField({...contact,ts:Date.now()});const r=dbStore('contacts').add(c);r.onsuccess=()=>res();r.onerror=rej})}
+function loadContacts(districtId){return new Promise(res=>{const items=[];const idx=dbRead('contacts').index('district');const r=idx.openCursor(IDBKeyRange.only(districtId));r.onsuccess=e=>{const c=e.target.result;if(c){if(c.value.sp===getSpId())items.push(c.value);c.continue()}else res(items)};r.onerror=()=>res([])})}
 function delContact(id){return new Promise(res=>{dbStore('contacts').delete(id);res()})}
-function allContacts(){return new Promise(res=>{const items=[];const r=dbRead('contacts').openCursor();r.onsuccess=e=>{const c=e.target.result;if(c){items.push(c.value);c.continue()}else res(items)};r.onerror=()=>res([])})}
+function allContacts(){return new Promise(res=>{const items=[];const r=dbRead('contacts').openCursor();r.onsuccess=e=>{const c=e.target.result;if(c){if(c.value.sp===getSpId())items.push(c.value);c.continue()}else res(items)};r.onerror=()=>res([])})}
 
 // ═══════ DATA ═══════
 const ACCRA=[
@@ -401,25 +437,25 @@ const STRATEGIES=[
 const TIPS=['📱 WhatsApp Business + auto-reply','🔋 Carry demo unit or 3D video','📄 100+ bilingual pricelists','📸 Build install photo library','🧭 Per district: material + WhatsApp → 3 days follow-up','🚗 Charter GHS 200-300/day','📊 Export CSV weekly','👔 MOOVED polo','☀️ Tue-Thu 9-12,2-5pm','💰 GHS 100 small change'];
 
 // ═══════ STATE ═══════
-let activeRegion=localStorage.getItem('avm_region')||'accra';
+let activeRegion=spGet('avm_region)||'accra';
 let filter='all',expanded={};
-let allCheckins=JSON.parse(localStorage.getItem('avm_checkins')||'{}');
-let allNotes=JSON.parse(localStorage.getItem('avm_notes')||'{}');
-let allAudioMeta=JSON.parse(localStorage.getItem('avm_audiometa')||'{}');
+let allCheckins=JSON.parse(spGet('avm_checkins)||'{}');
+let allNotes=JSON.parse(spGet('avm_notes)||'{}');
+let allAudioMeta=JSON.parse(spGet('avm_audiometa)||'{}');
 function getDistricts(){return REGIONS[activeRegion]?REGIONS[activeRegion].data:ACCRA}
 function key(s){return activeRegion+'_'+s}
 function getVisited(){return JSON.parse(localStorage.getItem('avm_v3_'+activeRegion)||'[]')}
 function setVisited(v){localStorage.setItem('avm_v3_'+activeRegion,JSON.stringify(v))}
 let visited=getVisited();
-function saveCheckins(){localStorage.setItem('avm_checkins',JSON.stringify(allCheckins))}
-function saveNotes(){localStorage.setItem('avm_notes',JSON.stringify(allNotes))}
-function saveAudioMeta(){localStorage.setItem('avm_audiometa',JSON.stringify(allAudioMeta))}
-function getSalesperson(){return localStorage.getItem('avm_sp')||''}
+function saveCheckins(){spSet('avm_checkins,JSON.stringify(allCheckins))}
+function saveNotes(){spSet('avm_notes,JSON.stringify(allNotes))}
+function saveAudioMeta(){spSet('avm_audiometa,JSON.stringify(allAudioMeta))}
+function getSpId(){return localStorage.getItem('avm_sp')||''}
 function saveSalesperson(){localStorage.setItem('avm_sp',document.getElementById('spName').value)}
-function onSalespersonChange(){saveSalesperson();render();toast('👤 Switched to '+getSalesperson())}
+function onSalespersonChange(){saveSalesperson();render();toast('👤 Switched to '+getSpId())}
 
 // Load team list from Google Sheets
-let teamCache=JSON.parse(localStorage.getItem('avm_team')||'[]');
+let teamCache=JSON.parse(spGet('avm_team)||'[]');
 async function loadTeamList(){
   const url=getSyncConfig().url;
   if(!url)return;
@@ -427,7 +463,7 @@ async function loadTeamList(){
     const r=await fetch(url+'?action=list_sp');
     const data=await r.json();
     teamCache=data.names||[];
-    localStorage.setItem('avm_team',JSON.stringify(teamCache));
+    spSet('avm_team,JSON.stringify(teamCache));
     updateTeamDropdown();
   }catch(e){updateTeamDropdown()} // use cache
 }
@@ -435,10 +471,10 @@ function updateTeamDropdown(){
   const list=document.getElementById('spList');
   list.innerHTML=teamCache.map(n=>`<option value="${n}">`).join('');
   const input=document.getElementById('spName');
-  if(!input.value&&getSalesperson())input.value=getSalesperson();
+  if(!input.value&&getSpId())input.value=getSpId();
   else if(!input.value)input.placeholder='Select name...';
   // Auto-select last used
-  const sp=getSalesperson();
+  const sp=getSpId();
   if(sp&&teamCache.includes(sp))input.value=sp;
   else if(teamCache.length>0&&!sp){input.value=teamCache[0];saveSalesperson()}
 }
@@ -453,7 +489,7 @@ function doCheckin(id){
   if(!navigator.geolocation){toast('GPS unavailable');return}
   navigator.geolocation.getCurrentPosition(p=>{
     const k=key(id);if(!allCheckins[k])allCheckins[k]=[];
-    allCheckins[k].push({ts:Date.now(),lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy,sp:getSalesperson()});
+    allCheckins[k].push({ts:Date.now(),lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy,sp:getSpId()});
     saveCheckins();render();toast('📍 GPS check-in recorded');
   },()=>{toast('GPS failed — check permissions')},{enableHighAccuracy:true,timeout:10000});
 }
@@ -479,7 +515,7 @@ async function toggleRecord(id){
       const aid=key(recFor)+'_'+Date.now();
       try{await saveAudio(aid,b)}catch(e){toast('Audio save failed');return}
       if(!allAudioMeta[key(recFor)])allAudioMeta[key(recFor)]=[];
-      allAudioMeta[key(recFor)].push({id:aid,ts:Date.now(),sp:getSalesperson()});
+      allAudioMeta[key(recFor)].push({id:aid,ts:Date.now(),sp:getSpId()});
       saveAudioMeta();toast('🎙️ Audio saved');render();
     };
     recMR.start();toast('🎙️ Recording...');render();
@@ -496,7 +532,7 @@ async function takePhoto(id){
     try{
       // Compress to max 300px wide
       const thumbData=await compressImage(f,300);
-      const pid=key(id)+'_'+Date.now();
+      const pid=getSpId()+'_'+key(id)+'_'+Date.now();
       // Save compressed thumb as blob + base64 for sync
       const blob=dataURLtoBlob(thumbData);
       await savePhoto(pid,blob,'');
@@ -528,14 +564,14 @@ function dataURLtoBlob(dataurl){
   return new Blob([arr],{type:mime});
 }
 function storePhotoForSync(k,dataUrl){
-  let pm=JSON.parse(localStorage.getItem('avm_photos_sync')||'{}');
+  let pm=JSON.parse(spGet('avm_photos_sync)||'{}');
   if(!pm[k])pm[k]=[];pm[k].push(dataUrl);
   // Keep max 20 photos per district
   if(pm[k].length>20)pm[k]=pm[k].slice(-20);
-  localStorage.setItem('avm_photos_sync',JSON.stringify(pm));
+  spSet('avm_photos_sync,JSON.stringify(pm));
 }
 function getPhotosForSync(k){
-  const pm=JSON.parse(localStorage.getItem('avm_photos_sync')||'{}');
+  const pm=JSON.parse(spGet('avm_photos_sync)||'{}');
   return pm[k]||[];
 }
 let photoViewData=null;
@@ -563,7 +599,7 @@ async function addContact_x(id){
   const type=document.getElementById('ct_'+id);
   const budget=document.getElementById('cb_'+id);
   if(!name||!name.value.trim()){toast('Name required');return}
-  await saveContact({district:id,region:activeRegion,name:name.value.trim(),phone:phone?phone.value:'',interest:interest?interest.value:'',type:type?type.value:'project',budget:budget?budget.value:'',sp:getSalesperson(),ts:Date.now()});
+  await saveContact({district:id,region:activeRegion,name:name.value.trim(),phone:phone?phone.value:'',interest:interest?interest.value:'',type:type?type.value:'project',budget:budget?budget.value:'',sp:getSpId(),ts:Date.now()});
   name.value='';if(phone)phone.value='';if(budget)budget.value='';
   toast('✅ Contact saved & synced');render();autoSyncTrigger();
 }
@@ -580,7 +616,7 @@ function render(){
   let list=D.filter(d=>{if(filter!=='all'&&d.type!==filter)return false;if(q&&!d.name.toLowerCase().includes(q)&&!d.desc.toLowerCase().includes(q)&&!d.tags.some(t=>t.toLowerCase().includes(q)))return false;return true});
   if(sort==='rating')list.sort((a,b)=>b.rating-a.rating);else if(sort==='name')list.sort((a,b)=>a.name.localeCompare(b.name));
   const tl={'residential':'🏡Res','commercial':'🏢Comm','solar-market':'🔋Solar','hardware':'🔧Hw','industrial':'🏭Ind','mixed':'🔄Mix'};
-  document.getElementById('spName').value=getSalesperson();
+  document.getElementById('spName').value=getSpId();
   grid.innerHTML=list.map(d=>{
     const v=visited.includes(d.id),ex=expanded[d.id]||false;
     const stars=Array(5).fill(0).map((_,i)=>`<span class="star${i<d.rating?' filled':''}">★</span>`).join('');
@@ -672,7 +708,7 @@ async function renderMyRecords(){
   const el=document.getElementById('mrContent');if(!el)return;
   try{
     const allC=await allContacts();
-    const sp=getSalesperson();
+    const sp=getSpId();
     const mine=allC.filter(c=>(c.sp===sp||!c.sp));
     const q=(document.getElementById('mrSearch')||{}).value||'';
     const filtered=q?mine.filter(c=>(c.name||'').toLowerCase().includes(q.toLowerCase())||(c.phone||'').includes(q)||(c.district||'').toLowerCase().includes(q.toLowerCase())):mine;
@@ -687,7 +723,7 @@ async function renderMyRecords(){
 function saveNote(id){
   const ta=document.getElementById('nt_'+id);if(!ta||!ta.value.trim())return;
   const k=key(id);if(!allNotes[k])allNotes[k]=[];
-  allNotes[k].push({ts:Date.now(),text:ta.value.trim(),sp:getSalesperson()});
+  allNotes[k].push({ts:Date.now(),text:ta.value.trim(),sp:getSpId()});
   saveNotes();ta.value='';toast('📝 Note saved');render();
 }
 function toggleExpand(id){expanded[id]=!expanded[id];render()}
@@ -763,7 +799,7 @@ function renderReport(){
 }
 
 function exportReport(){
-  const D=getDistricts();const sp=getSalesperson();
+  const D=getDistricts();const sp=getSpId();
   let csv='Salesperson,District,Type,Rating,Visited,GPS Check-ins,Last GPS,Notes,Audio\n';
   D.forEach(d=>{
     const v=visited.includes(d.id);
@@ -780,7 +816,7 @@ function exportReport(){
 
 function syncToCloud(){
   // Export as JSON for manual cloud upload
-  const data={region:activeRegion,sp:getSalesperson(),ts:Date.now(),visited,checkins:allCheckins,notes:allNotes};
+  const data={region:activeRegion,sp:getSpId(),ts:Date.now(),visited,checkins:allCheckins,notes:allNotes};
   allContacts().then(cc=>{
     data.contacts=cc;
     const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
@@ -793,7 +829,7 @@ function syncToCloud(){
 
 function resetAll(){
   if(!confirm('Reset ALL data for '+REGIONS[activeRegion].name+'?'))return;
-  visited=[];setVisited([]);
+  visited=[];spSet('avm_v3_'+activeRegion,'[]');
   Object.keys(allNotes).forEach(k=>{if(k.startsWith(activeRegion+'_'))delete allNotes[k]});
   Object.keys(allCheckins).forEach(k=>{if(k.startsWith(activeRegion+'_'))delete allCheckins[k]});
   Object.keys(allAudioMeta).forEach(k=>{if(k.startsWith(activeRegion+'_'))delete allAudioMeta[k]});
@@ -851,8 +887,8 @@ function initMap(){
 
 // ═══════ REGIONS ═══════
 function switchRegion(r){
-  activeRegion=r;localStorage.setItem('avm_region',r);
-  visited=getVisited();expanded={};mapInit=false;
+  activeRegion=r;spSet('avm_region,r);
+  visited=spGet('avm_v3_'+r,[]);expanded={};mapInit=false;
   document.querySelectorAll('.rbn').forEach(b=>b.classList.toggle('active',b.dataset.r===r));
   render();toast('🗺️ '+REGIONS[r].name);
 }
@@ -862,25 +898,25 @@ function renderRegions(){
 }
 
 // ═══════ UI ═══════
-function setTheme(t){document.documentElement.setAttribute('data-theme',t);document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('active',b.dataset.t===t));localStorage.setItem('avm_t4',t)}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('active',b.dataset.t===t));spSet('avm_t4,t)}
 function setFilter(f,el){filter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c.dataset.f===f));render()}
 function switchTab(t,el){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.tc').forEach(c=>c.classList.remove('active'));document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('active');if(t==='map')initMap()}
 
 let tt;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2000)}
 
 // ═══════ SYNC CONFIG & ENGINE ═══════
-function getSyncConfig(){return JSON.parse(localStorage.getItem('avm_sync')||'{"url":"https://script.google.com/macros/s/AKfycbxxX289IltGm0ubEZj8yURqZPnZUVtqsKw1-xM1GY2rtb9pI8ehb_IA4XbUZCyODryfXQ/exec","auto":true,"interval":0,"lastSync":0}')}
+function getSyncConfig(){return JSON.parse(spGet('avm_sync)||'{"url":"https://script.google.com/macros/s/AKfycbxxX289IltGm0ubEZj8yURqZPnZUVtqsKw1-xM1GY2rtb9pI8ehb_IA4XbUZCyODryfXQ/exec","auto":true,"interval":0,"lastSync":0}')}
 function saveSyncConfig(){
   const cfg=getSyncConfig();
   cfg.url=document.getElementById('gsUrl').value.trim();
   cfg.interval=parseInt(document.getElementById('syncInterval').value)||0;
-  localStorage.setItem('avm_sync',JSON.stringify(cfg));
+  spSet('avm_sync,JSON.stringify(cfg));
   updateSyncUI();
   resetSyncTimer();
 }
 function toggleAutoSync(){
   const cfg=getSyncConfig();cfg.auto=!cfg.auto;
-  localStorage.setItem('avm_sync',JSON.stringify(cfg));
+  spSet('avm_sync,JSON.stringify(cfg));
   updateSyncUI();resetSyncTimer();
   toast(cfg.auto?'✅ Auto sync ON':'⏸️ Auto sync OFF');
 }
@@ -914,8 +950,8 @@ async function syncNow(){
   const url=cfg.url||defUrl;
   if(!url){toast('❌ Set Google Sheets URL first');return}
   // Save URL if it was using default
-  if(!cfg.url){cfg.url=defUrl;localStorage.setItem('avm_sync',JSON.stringify(cfg));updateSyncUI()}
-  const sp=getSalesperson();
+  if(!cfg.url){cfg.url=defUrl;spSet('avm_sync,JSON.stringify(cfg));updateSyncUI()}
+  const sp=getSpId();
   const data={sp,timestamp:new Date().toISOString(),region:activeRegion,visits:{},notes:{},gps:{},contacts:{},photoCount:{},photos:{}};
   const D=getDistricts();
   D.forEach(d=>{
@@ -948,7 +984,7 @@ async function syncNow(){
   try{
     setSyncStatus('syncing');
     const r=await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data)});
-    cfg.lastSync=Date.now();localStorage.setItem('avm_sync',JSON.stringify(cfg));
+    cfg.lastSync=Date.now();spSet('avm_sync,JSON.stringify(cfg));
     setSyncStatus('on');updateSyncUI();
     toast('✅ Data synced to cloud');
   }catch(e){
@@ -1132,9 +1168,40 @@ function doGet(e) {
 function copyScript(){const code='// POST: handles sync + team management + location requests\nfunction doPost(e) {\n  var ss = SpreadsheetApp.getActiveSpreadsheet();\n  var data = JSON.parse(e.postData.contents);\n  var action = data.action || \'sync\';\n  \n  if (action === \'add_sp\') {\n    var team = ss.getSheetByName(\'Team\') || ss.insertSheet(\'Team\');\n    team.appendRow([data.name || \'\', new Date().toISOString()]);\n    return ContentService.createTextOutput(\'OK\');\n  }\n  if (action === \'remove_sp\') {\n    var team = ss.getSheetByName(\'Team\');\n    if (team) {\n      var rows = team.getDataRange().getValues();\n      for (var i = rows.length-1; i >= 0; i--) {\n        if (rows[i][0] === data.name) { team.deleteRow(i+1); }\n      }\n    }\n    return ContentService.createTextOutput(\'OK\');\n  }\n  if (action === \'request_location\') {\n    var req = ss.getSheetByName(\'Requests\') || ss.insertSheet(\'Requests\');\n    if (req.getLastRow() === 0) req.appendRow([\'District\',\'Lat\',\'Lng\',\'RequestedBy\',\'Status\',\'Timestamp\']);\n    req.appendRow([data.district||\'\', data.lat||0, data.lng||0, data.sp||\'\', \'pending\', new Date().toISOString()]);\n    return ContentService.createTextOutput(\'OK\');\n  }\n  \n  // Default: data sync\n  var sheet = ss.getActiveSheet();\n  if (sheet.getLastRow() === 0) {\n    sheet.appendRow(["Timestamp","Salesperson","Region","Visits","GPS","Notes","Contacts","Photo Count","Photos"]);\n  }\n  sheet.appendRow([\n    data.timestamp || new Date().toISOString(),\n    data.sp || "", data.region || "",\n    JSON.stringify(data.visits), JSON.stringify(data.gps),\n    JSON.stringify(data.notes), JSON.stringify(data.contacts||{}),\n    JSON.stringify(data.photoCount||{}), JSON.stringify(data.photos||{})\n  ]);\n  return ContentService.createTextOutput(\'OK\');\n}\n\n// GET: serves data + team list + pending requests\nfunction doGet(e) {\n  var action = (e && e.parameter && e.parameter.action) || \'data\';\n  var ss = SpreadsheetApp.getActiveSpreadsheet();\n  \n  if (action === \'list_sp\') {\n    var team = ss.getSheetByName(\'Team\');\n    var names = [];\n    if (team) {\n      var rows = team.getDataRange().getValues();\n      rows.forEach(function(r) { if (r[0]) names.push(r[0]); });\n    }\n    return ContentService.createTextOutput(JSON.stringify({names:names}))\n      .setMimeType(ContentService.MimeType.JSON);\n  }\n  if (action === \'pending_locations\') {\n    var req = ss.getSheetByName(\'Requests\');\n    var items = [];\n    if (req) {\n      var headers = req.getRange(1,1,1,req.getLastColumn()).getValues()[0];\n      var rows = req.getRange(2,1,req.getLastRow()-1,req.getLastColumn()).getValues();\n      items = rows.map(function(r) {\n        var o = {};\n        headers.forEach(function(h,i) { o[h] = r[i] || \'\'; });\n        return o;\n      });\n    }\n    return ContentService.createTextOutput(JSON.stringify(items))\n      .setMimeType(ContentService.MimeType.JSON);\n  }\n  \n  // Default: return all sync data\n  var sheet = ss.getActiveSheet();\n  var range = sheet.getDataRange();\n  var values = range.getValues();\n  if (values.length < 2) {\n    return ContentService.createTextOutput(\'[]\').setMimeType(ContentService.MimeType.JSON);\n  }\n  var headers = values.shift();\n  var result = values.map(function(row) {\n    var obj = {};\n    headers.forEach(function(h, i) { obj[h] = row[i] || \'\'; });\n    return obj;\n  });\n  return ContentService.createTextOutput(JSON.stringify(result))\n    .setMimeType(ContentService.MimeType.JSON);\n}';navigator.clipboard.writeText(code).then(()=>toast('📋 Script copied!')).catch(()=>toast('Copy manually'));}
 
 // ═══════ INIT ═══════
-const st=localStorage.getItem('avm_t4')||'light';setTheme(st);
-document.getElementById('spName').value=getSalesperson();
+const st=spGet('avm_t4)||'light';setTheme(st);
+document.getElementById('spName').value=getSpId();
 openDB().then(()=>{render();renderRegions();updateSyncUI();resetSyncTimer();checkPWA();renderGSSetupGuide()}).catch(e=>{console.warn('DB:',e.message);render();renderRegions();updateSyncUI();resetSyncTimer();checkPWA();renderGSSetupGuide()});
+</script>
+
+<script>
+(function(){
+  const session=sessionStorage.getItem('avm_session');
+  if(!session){
+    document.getElementById('loginOverlay').style.display='flex';
+  }else{
+    try{
+      window._currentUser=JSON.parse(session);
+      document.getElementById('loginOverlay').style.display='none';
+      setTimeout(initApp,100);
+    }catch(e){
+      document.getElementById('loginOverlay').style.display='flex';
+    }
+  }
+})();
+
+// ═══════ AUTH INIT APP ═══════
+function initApp(){
+  document.getElementById('loggedInUser').textContent = ' ' + getSpName();
+  document.getElementById('logoutBtn').style.display = 'inline-block';
+  activeRegion = spGet('avm_region', 'accra');
+  visited = spGet('avm_v3_' + activeRegion, []);
+  allCheckins = spGet('avm_checkins', {});
+  allNotes = spGet('avm_notes', {});
+  allAudioMeta = spGet('avm_audiometa', {});
+  allPhotosSync = spGet('avm_photos_sync', {});
+  render(); renderRegions(); updateSyncUI(); resetSyncTimer(); checkPWA(); renderGSSetupGuide();
+}
+
 </script>
 </body>
 </html>
