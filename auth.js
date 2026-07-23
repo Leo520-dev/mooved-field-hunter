@@ -43,7 +43,7 @@
       sessionStorage.setItem('avm_session', JSON.stringify(d.user));
       document.body.classList.add('logged-in');
       document.getElementById('loginOverlay').style.display = 'none';
-      toast('Welcome ' + d.user.name);
+      console.log('Welcome ' + d.user.name);
       initApp();
     } catch(e){
       err.textContent = 'Network error: ' + e.message;

@@ -296,12 +296,12 @@ function renderTable(){
   
   // Update filters
   const fSp=document.getElementById('fSp');fSp.innerHTML='<option value="all">All</option>'+[...sps].map(s=>`<option>${s}</option>`).join('');
-  const fReg=document.getElementById('fReg');fReg.innerHTML='<option value="all">All</option>'+[...regs].map(r=>`<option>${r}</option>`).join('');
+  const fReg=document.getElementById('fRegion');fReg.innerHTML='<option value="all">All</option>'+[...regs].map(r=>`<option>${r}</option>`).join('');
   
   // Build rows per district per salesperson
   const q=document.getElementById('fSearch').value.toLowerCase();
   const fS=document.getElementById('fSp').value;
-  const fR=document.getElementById('fReg').value;
+  const fR=document.getElementById('fRegion').value;
   const fV=document.getElementById('fVisited').value;
   
   let rows=[];

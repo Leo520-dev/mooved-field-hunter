@@ -437,11 +437,11 @@ const STRATEGIES=[
 const TIPS=['📱 WhatsApp Business + auto-reply','🔋 Carry demo unit or 3D video','📄 100+ bilingual pricelists','📸 Build install photo library','🧭 Per district: material + WhatsApp → 3 days follow-up','🚗 Charter GHS 200-300/day','📊 Export CSV weekly','👔 MOOVED polo','☀️ Tue-Thu 9-12,2-5pm','💰 GHS 100 small change'];
 
 // ═══════ STATE ═══════
-let activeRegion=spGet('avm_region)||'accra';
+let activeRegion=spGet('avm_region','accra');
 let filter='all',expanded={};
-let allCheckins=JSON.parse(spGet('avm_checkins)||'{}');
-let allNotes=JSON.parse(spGet('avm_notes)||'{}');
-let allAudioMeta=JSON.parse(spGet('avm_audiometa)||'{}');
+let allCheckins=spGet('avm_checkins',{});
+let allNotes=spGet('avm_notes',{});
+let allAudioMeta=spGet('avm_audiometa',{});
 function getDistricts(){return REGIONS[activeRegion]?REGIONS[activeRegion].data:ACCRA}
 function key(s){return activeRegion+'_'+s}
 function getVisited(){return JSON.parse(localStorage.getItem('avm_v3_'+activeRegion)||'[]')}
@@ -1193,12 +1193,7 @@ openDB().then(()=>{render();renderRegions();updateSyncUI();resetSyncTimer();chec
 function initApp(){
   document.getElementById('loggedInUser').textContent = ' ' + getSpName();
   document.getElementById('logoutBtn').style.display = 'inline-block';
-  activeRegion = spGet('avm_region', 'accra');
   visited = spGet('avm_v3_' + activeRegion, []);
-  allCheckins = spGet('avm_checkins', {});
-  allNotes = spGet('avm_notes', {});
-  allAudioMeta = spGet('avm_audiometa', {});
-  allPhotosSync = spGet('avm_photos_sync', {});
   render(); renderRegions(); updateSyncUI(); resetSyncTimer(); checkPWA(); renderGSSetupGuide();
 }
 
